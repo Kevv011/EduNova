@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Instructor extends Model
 {
     protected $fillable = [
-        'specialty',
         'biography',
         'social_links',
         'status',
         'user_id',
+        'category_id',
     ];
 
     protected $casts = [
@@ -23,5 +23,11 @@ class Instructor extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Relacion de FK con Categories
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'category_id');
     }
 }

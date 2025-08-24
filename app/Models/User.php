@@ -73,6 +73,6 @@ class User extends Authenticatable implements FilamentUser
     // Acceso para solo administradores en panel de Filament
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->hasRole('admin');
+        return $this->hasRole('admin') && str_ends_with($this->email, '@admin.com');
     }
 }

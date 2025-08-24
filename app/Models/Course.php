@@ -14,6 +14,12 @@ class Course extends Model
         'description',
         'category_id',
         'author_id',
+        'specialty_id',
+        'areas',
+    ];
+
+    protected $casts = [
+        'areas' => 'array',
     ];
 
     // Relacion tabla pivote course_student
