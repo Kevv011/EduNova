@@ -214,7 +214,9 @@ const navigation_footer = [
                     >
                 </div>
                 <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-                    <a href="#" class="font-semibold text-gray-900 text-sm/6"
+                    <a
+                        :href="route('login')"
+                        class="font-semibold text-gray-900 text-sm/6"
                         >Iniciar Sesión<span aria-hidden="true">&rarr;</span></a
                     >
                 </div>
