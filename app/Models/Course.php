@@ -13,8 +13,7 @@ class Course extends Model
         'name',
         'description',
         'category_id',
-        'author_id',
-        'specialty_id',
+        'instructor_id',
         'areas',
     ];
 
