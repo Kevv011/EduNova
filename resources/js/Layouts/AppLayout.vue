@@ -48,7 +48,7 @@ const sidebarNavigation = computed(() => [
         visible: !props.disabledOptions,
     },
     {
-        name: "Cursos",
+        name: "Mis cursos",
         href: "#",
         icon: RectangleStackIcon,
         current: route().current("courses.*"),
@@ -99,7 +99,7 @@ onMounted(() => {
             <div class="flex items-center justify-center h-16 shrink-0">
                 <a :href="route('home')">
                     <img
-                        src="images/edunova-short.png"
+                        src="/images/edunova-short.png"
                         alt="edunova-logo"
                         class="size-11"
                     />
@@ -182,8 +182,8 @@ onMounted(() => {
                                 <span class="sr-only">Open user menu</span>
                                 <img
                                     class="rounded-full size-8 bg-gray-50"
-                                    :src="user?.profile_photo_url"
-                                    alt=""
+                                    :src="user.profile_photo_path"
+                                    alt="user.name"
                                 />
                                 <span class="hidden lg:flex lg:items-center">
                                     <span

@@ -17,6 +17,7 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
+    // Rutas para registro de estudiante
     Route::prefix('registration')->name('registration.')->group(function () {
         Route::get('/', [RegistrationController::class, 'index'])->name('index');
         Route::post('/academic-info', [RegistrationController::class, 'academic_information'])->name('academic-info');
