@@ -44,7 +44,7 @@ const posts = [
         author: {
             name: "Mentores Tech",
             imageUrl:
-                "https://www.gaceta.udg.mx/wp-content/uploads/2022/09/Captura-de-Pantalla-2022-09-26-a-las-9.58.54-1024x672.png"
+                "https://www.gaceta.udg.mx/wp-content/uploads/2022/09/Captura-de-Pantalla-2022-09-26-a-las-9.58.54-1024x672.png",
         },
     },
     {
@@ -62,17 +62,47 @@ const posts = [
             imageUrl:
                 "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
         },
-    }
+    },
 ];
 
 // Contenido del Swipper
 const base = [
-    { id: 1, title: "Álgebra", description: "Domina operaciones con signos, ecuaciones y expresiones algebraicas." },
-    { id: 2, title: "Geometría", description: "Aprende sobre figuras, áreas, volúmenes y propiedades espaciales." },
-    { id: 3, title: "Trigonometría", description: "Explora funciones, razones y aplicaciones en problemas reales." },
-    { id: 4, title: "Programación", description: "Iníciate en el mundo del código con proyectos prácticos y divertidos." },
-    { id: 5, title: "Física", description: "Comprende las leyes que rigen el movimiento, la energía y el universo." },
-    { id: 6, title: "Química", description: "Descubre el mundo de los átomos, moléculas y reacciones químicas." },
+    {
+        id: 1,
+        title: "Álgebra",
+        description:
+            "Domina operaciones con signos, ecuaciones y expresiones algebraicas.",
+    },
+    {
+        id: 2,
+        title: "Geometría",
+        description:
+            "Aprende sobre figuras, áreas, volúmenes y propiedades espaciales.",
+    },
+    {
+        id: 3,
+        title: "Trigonometría",
+        description:
+            "Explora funciones, razones y aplicaciones en problemas reales.",
+    },
+    {
+        id: 4,
+        title: "Programación",
+        description:
+            "Iníciate en el mundo del código con proyectos prácticos y divertidos.",
+    },
+    {
+        id: 5,
+        title: "Física",
+        description:
+            "Comprende las leyes que rigen el movimiento, la energía y el universo.",
+    },
+    {
+        id: 6,
+        title: "Química",
+        description:
+            "Descubre el mundo de los átomos, moléculas y reacciones químicas.",
+    },
 ];
 
 const items = [...base, ...base, ...base];
@@ -141,29 +171,45 @@ const navigation_footer = [
         <main>
             <!-- Hero section -->
             <div class="relative pb-16 overflow-hidden isolate pt-14 sm:pb-20">
+                <img
+                    src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2830&q=80&blend=fff&sat=-100&exp=15&blend-mode=overlay"
+                    alt=""
+                    class="absolute inset-0 object-cover -z-10 size-full opacity-10"
+                />
                 <div class="px-6 mx-auto max-w-7xl lg:px-8">
                     <div class="max-w-2xl py-20 mx-auto sm:py-48 lg:py-40">
                         <div class="text-center">
-                            <h1 class="text-2xl font-montserrat font-bold text-primary text-balance sm:text-5xl">
-                                EduNova
-                            </h1>
-                            <h3 class="mt-8 text-3xl font-nunito font-normal text-white text-pretty sm:text-6xl">
+                            <div class="flex justify-center">
+                                <img
+                                    src="images/edunova-white.png"
+                                    alt="edunova-logo"
+                                />
+                            </div>
+                            <h3
+                                class="mt-8 text-3xl font-normal text-white font-nunito text-pretty sm:text-6xl"
+                            >
                                 La mejor plataforma de aprendizaje gratuito
                             </h3>
-                            <p class="mt-8 text-base text-accent font-nunito sm:text-2xl">¡Refuerza tu conocimiento y
-                                transforma tus
-                                sueños en
-                                una
-                                realidad!
+                            <p
+                                class="mt-8 text-base text-accent font-nunito sm:text-2xl"
+                            >
+                                ¡Refuerza tu conocimiento y transforma tus
+                                sueños en una realidad!
                             </p>
                             <div
-                                class="flex flex-col items-center justify-center mt-10 gap-y-6 w-full md:flex-row md:gap-x-6">
-                                <Link :href="route('register')"
-                                    class="rounded-xl bg-primary px-10 py-2 text-lg font-montserrat font-semibold text-white hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 md:text-md">
-                                Registrarse</Link>
-                                <Link href="#"
-                                    class="rounded-xl bg-primary px-10 py-2 text-lg font-montserrat font-semibold text-white hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 md:text-md">
-                                Iniciar sesión
+                                class="flex flex-col items-center justify-center w-full mt-10 gap-y-6 md:flex-row md:gap-x-6"
+                            >
+                                <Link
+                                    :href="route('register')"
+                                    class="px-10 py-2 text-lg font-semibold text-white rounded-xl bg-primary font-montserrat hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 md:text-md"
+                                >
+                                    Registrarse</Link
+                                >
+                                <Link
+                                    :href="route('login')"
+                                    class="px-10 py-2 text-lg font-semibold text-white rounded-xl bg-primary font-montserrat hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 md:text-md"
+                                >
+                                    Iniciar sesión
                                 </Link>
                             </div>
                         </div>
@@ -175,30 +221,55 @@ const navigation_footer = [
             <div class="py-24 bg-white sm:py-24">
                 <div class="px-6 mx-auto max-w-7xl lg:px-8">
                     <div class="max-w-2xl mx-auto text-center sm:max-w-4xl">
-                        <h2 class="text-4xl font-semibold font-nunito text-important text-balance sm:text-5xl">
+                        <h2
+                            class="text-4xl font-semibold font-nunito text-important text-balance sm:text-5xl"
+                        >
                             ¡Estudiar nunca fue tan fácil y divertido!
                         </h2>
-                        <p class="mt-2 text-accent font-nunito text-lg sm:text-2xl">
-                            Aprende a tu ritmo, con clases interactivas y contenido práctico pensado para ti. Con
-                            nuestra plataforma, estudiar es más sencillo y emocionante que nunca
+                        <p
+                            class="mt-2 text-lg text-accent font-nunito sm:text-2xl"
+                        >
+                            Aprende a tu ritmo, con clases interactivas y
+                            contenido práctico pensado para ti. Con nuestra
+                            plataforma, estudiar es más sencillo y emocionante
+                            que nunca
                         </p>
                     </div>
                     <div
-                        class="grid max-w-2xl grid-cols-1 gap-8 mx-auto mt-16 auto-rows-fr sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
-                        <article v-for="post in posts" :key="post.id"
-                            class="relative flex flex-col justify-end px-8 pb-8 overflow-hidden bg-gray-900 isolate rounded-2xl pt-80 sm:pt-48 lg:pt-80">
-                            <img :src="post.imageUrl" alt="" class="absolute inset-0 object-cover -z-10 size-full" />
-                            <div class="absolute inset-0 -z-10 bg-linear-to-t from-gray-900 via-gray-900/40" />
-                            <div class="absolute inset-0 -z-10 rounded-2xl inset-ring inset-ring-gray-900/10" />
+                        class="grid max-w-2xl grid-cols-1 gap-8 mx-auto mt-16 auto-rows-fr sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3"
+                    >
+                        <article
+                            v-for="post in posts"
+                            :key="post.id"
+                            class="relative flex flex-col justify-end px-8 pb-8 overflow-hidden bg-gray-900 isolate rounded-2xl pt-80 sm:pt-48 lg:pt-80"
+                        >
+                            <img
+                                :src="post.imageUrl"
+                                alt=""
+                                class="absolute inset-0 object-cover -z-10 size-full"
+                            />
+                            <div
+                                class="absolute inset-0 -z-10 bg-linear-to-t from-gray-900 via-gray-900/40"
+                            />
+                            <div
+                                class="absolute inset-0 -z-10 rounded-2xl inset-ring inset-ring-gray-900/10"
+                            />
 
-                            <div class="flex flex-wrap items-center overflow-hidden text-gray-300 gap-y-1 text-sm/6">
+                            <div
+                                class="flex flex-wrap items-center overflow-hidden text-gray-300 gap-y-1 text-sm/6"
+                            >
                                 <div class="flex items-center -ml-4 gap-x-4">
-                                    <svg viewBox="0 0 2 2" class="-ml-0.5 size-0.5 flex-none fill-white/50">
+                                    <svg
+                                        viewBox="0 0 2 2"
+                                        class="-ml-0.5 size-0.5 flex-none fill-white/50"
+                                    >
                                         <circle cx="1" cy="1" r="1" />
                                     </svg>
                                 </div>
                             </div>
-                            <h3 class="mt-3 font-semibold text-important text-center rounded-2xl bg-light text-lg/6">
+                            <h3
+                                class="mt-3 font-semibold text-center text-important rounded-2xl bg-light text-lg/6"
+                            >
                                 <a :href="post.href">
                                     <span class="absolute inset-0" />
                                     {{ post.title }}
@@ -213,156 +284,244 @@ const navigation_footer = [
             <div class="py-24 bg-indigo-600 sm:py-24">
                 <div class="px-6 mx-auto max-w-7xl lg:px-8">
                     <div class="max-w-2xl mx-auto text-center sm:max-w-4xl">
-                        <h2 class="text-4xl font-semibold font-nunito text-light text-balance sm:text-5xl">
+                        <h2
+                            class="text-4xl font-semibold font-nunito text-light text-balance sm:text-5xl"
+                        >
                             Contamos con un amplio catálogo de materias...
                         </h2>
-                        <p class="mt-2 text-[#E0E7FF] font-nunito text-lg sm:text-2xl">
-                            ¿Quieres desarrollar tus habilidades matemáticas, adquirir conocimientos de programación o
-                            explorar el maravilloso mundo de la ciencia? ¡Todo lo encuentras aqui!
+                        <p
+                            class="mt-2 text-[#E0E7FF] font-nunito text-lg sm:text-2xl"
+                        >
+                            ¿Quieres desarrollar tus habilidades matemáticas,
+                            adquirir conocimientos de programación o explorar el
+                            maravilloso mundo de la ciencia? ¡Todo lo encuentras
+                            aqui!
                         </p>
                     </div>
                     <div class="mt-16">
                         <!--Aquí irá el Swiper-->
-                        <Swiper :modules="modules" :loop="true" :freeMode="{ enabled: true, momentum: false }"
+                        <Swiper
+                            :modules="modules"
+                            :loop="true"
+                            :freeMode="{ enabled: true, momentum: false }"
                             :autoplay="{
                                 delay: 0,
                                 disableOnInteraction: false,
-                                pauseOnMouseEnter: true
-                            }" :speed="6000" :slides-per-view="'auto'" :space-between="16" class="w-full">
-                            <SwiperSlide v-for="item in items" :key="item.id + '-dup1'" class="!w-80">
+                                pauseOnMouseEnter: true,
+                            }"
+                            :speed="6000"
+                            :slides-per-view="'auto'"
+                            :space-between="16"
+                            class="w-full"
+                        >
+                            <SwiperSlide
+                                v-for="item in items"
+                                :key="item.id + '-dup1'"
+                                class="!w-80"
+                            >
                                 <div
-                                    class="p-6 h-80 w-60 rounded-2xl shadow-lg bg-light text-dark flex flex-col justify-between transform hover:scale-105 transition-transform">
+                                    class="flex flex-col justify-between p-6 transition-transform transform shadow-lg h-80 w-60 rounded-2xl bg-light text-dark hover:scale-105"
+                                >
                                     <!-- Encabezado con ícono -->
                                     <div
-                                        class="flex items-center justify-center h-20 w-20 mx-auto rounded-full bg-primary/20">
-                                        <span class="text-primary text-4xl font-bold">{{ item.title.charAt(0) }}</span>
+                                        class="flex items-center justify-center w-20 h-20 mx-auto rounded-full bg-primary/20"
+                                    >
+                                        <span
+                                            class="text-4xl font-bold text-primary"
+                                            >{{ item.title.charAt(0) }}</span
+                                        >
                                     </div>
 
                                     <!-- Contenido -->
-                                    <h3 class="mt-4 text-lg font-bold text-dark text-center">{{ item.title }}</h3>
-                                    <p class="text-dark text-sm text-center">
+                                    <h3
+                                        class="mt-4 text-lg font-bold text-center text-dark"
+                                    >
+                                        {{ item.title }}
+                                    </h3>
+                                    <p class="text-sm text-center text-dark">
                                         {{ item.description }}
                                     </p>
 
                                     <!-- Botón -->
                                     <button
-                                        class="mt-4 py-2 rounded-lg bg-indigo-600 text-light font-semibold hover:bg-indigo-500 transition-colors">
+                                        class="py-2 mt-4 font-semibold transition-colors bg-indigo-600 rounded-lg text-light hover:bg-indigo-500"
+                                    >
                                         Ver más
                                     </button>
                                 </div>
-
                             </SwiperSlide>
                         </Swiper>
-
                     </div>
                 </div>
             </div>
 
-
-
             <!-- Learning objectives -->
             <div class="py-24 bg-gray-50 sm:py-32">
                 <div class="max-w-2xl px-6 mx-auto lg:max-w-7xl lg:px-8">
-                    <h2 class="font-semibold text-center text-indigo-600 text-base/7">
+                    <h2
+                        class="font-semibold text-center text-indigo-600 text-base/7"
+                    >
                         Nunca pares de aprender
                     </h2>
                     <p
-                        class="max-w-lg mx-auto mt-2 text-4xl font-semibold tracking-tight text-center text-balance text-gray-950 sm:text-5xl">
+                        class="max-w-lg mx-auto mt-2 text-4xl font-semibold tracking-tight text-center text-balance text-gray-950 sm:text-5xl"
+                    >
                         Somos una herramienta de aprendizaje completa
                     </p>
-                    <div class="grid gap-4 mt-10 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2">
+                    <div
+                        class="grid gap-4 mt-10 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2"
+                    >
                         <div class="relative lg:row-span-2">
-                            <div class="absolute bg-white rounded-lg inset-px lg:rounded-l-4xl" />
                             <div
-                                class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-l-[calc(2rem+1px)]">
-                                <div class="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
-                                    <p class="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">
+                                class="absolute bg-white rounded-lg inset-px lg:rounded-l-4xl"
+                            />
+                            <div
+                                class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-l-[calc(2rem+1px)]"
+                            >
+                                <div
+                                    class="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0"
+                                >
+                                    <p
+                                        class="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center"
+                                    >
                                         Al alcance de tu mano
                                     </p>
-                                    <p class="max-w-lg mt-2 text-gray-600 text-sm/6 max-lg:text-center">
-                                        No importa si utilizas tu celular, tablet o computadora. EduNova se adapta a tus
-                                        necesidades
-                                    </p>
-                                </div>
-                                <div class="@container relative min-h-120 w-full grow max-lg:mx-auto max-lg:max-w-sm">
-                                    <div
-                                        class="absolute inset-x-10 top-10 bottom-0 overflow-hidden rounded-t-[12cqw] border-x-[3cqw] border-t-[3cqw] border-gray-700 bg-gray-900 shadow-2xl">
-                                        <img class="object-cover object-center size-full"
-                                            src="https://img.freepik.com/free-vector/person-using-phone_24908-81116.jpg?semt=ais_hybrid&w=740&q=80"
-                                            alt="" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div
-                                class="absolute rounded-lg shadow-sm pointer-events-none inset-px outline outline-black/5 lg:rounded-l-4xl" />
-                        </div>
-                        <div class="relative max-lg:row-start-1">
-                            <div class="absolute bg-white rounded-lg inset-px max-lg:rounded-t-4xl" />
-                            <div
-                                class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]">
-                                <div class="px-8 pt-8 sm:px-10 sm:pt-5">
-                                    <p class="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">
-                                        Fácil de usar
-                                    </p>
-                                    <p class="max-w-lg mt-2 text-gray-600 text-sm/6 max-lg:text-center">
-                                        Hemos preparado una experiencia intuitiva y divertida para acompañarte en tu
-                                        camino
+                                    <p
+                                        class="max-w-lg mt-2 text-gray-600 text-sm/6 max-lg:text-center"
+                                    >
+                                        No importa si utilizas tu celular,
+                                        tablet o computadora. EduNova se adapta
+                                        a tus necesidades
                                     </p>
                                 </div>
                                 <div
-                                    class="flex items-center justify-center flex-1 mt-2 px-8 max-lg:pt-10 max-lg:pb-12 sm:px-10 lg:pb-2">
-                                    <img class="w-full rounded-xl max-lg:max-w-xs"
-                                        src="https://cdn.elearningindustry.com/wp-content/uploads/2024/08/Shutterstock_2492839703.jpg"
-                                        alt="" />
-                                </div>
-                            </div>
-                            <div
-                                class="absolute rounded-lg shadow-sm pointer-events-none inset-px outline outline-black/5 max-lg:rounded-t-4xl" />
-                        </div>
-                        <div class="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
-                            <div class="absolute bg-white rounded-lg inset-px" />
-                            <div
-                                class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
-                                <div class="px-8 pt-8 sm:px-10 sm:pt-5">
-                                    <p class="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">
-                                        Contenido actualizado
-                                    </p>
-                                    <p class="max-w-lg mt-2 text-gray-600 text-sm/6 max-lg:text-center">
-                                        Encuentra información de calidad que potencia tus habilidades académicas
-                                    </p>
-                                </div>
-                                <div class="@container flex flex-1 items-center max-lg:py-6 lg:pb-2">
-                                    <img class="h-[min(152px,40cqw)] object-cover"
-                                        src="https://static.vecteezy.com/system/resources/previews/036/339/043/non_2x/verified-social-media-badge-icons-set-symbols-for-authenticity-and-trust-vector.jpg"
-                                        alt="" />
-                                </div>
-                            </div>
-                            <div
-                                class="absolute rounded-lg shadow-sm pointer-events-none inset-px outline outline-black/5" />
-                        </div>
-                        <div class="relative lg:row-span-2">
-                            <div class="absolute bg-white rounded-lg inset-px lg:rounded-l-4xl" />
-                            <div
-                                class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-l-[calc(2rem+1px)]">
-                                <div class="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
-                                    <p class="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">
-                                        ¡GRATIS!
-                                    </p>
-                                    <p class="max-w-lg mt-2 text-gray-600 text-sm/6 max-lg:text-center">
-                                        No pagues ni un solo centavo, ¡La educación no tiene precio!
-                                    </p>
-                                </div>
-                                <div class="@container relative min-h-120 w-full grow max-lg:mx-auto max-lg:max-w-sm">
+                                    class="@container relative min-h-120 w-full grow max-lg:mx-auto max-lg:max-w-sm"
+                                >
                                     <div
-                                        class="absolute inset-x-0 top-0 bottom-0 rounded-5xl overflow-hidden shadow-lg">
-                                        <img class="object-cover object-center size-full"
-                                            src="https://img.freepik.com/free-vector/happy-young-couple-having-fun-girl-guy-dancing-party-celebrating-good-news-flat-illustration_74855-10820.jpg?semt=ais_hybrid&w=740"
-                                            alt="" />
+                                        class="absolute inset-x-10 top-10 bottom-0 overflow-hidden rounded-t-[12cqw] border-x-[3cqw] border-t-[3cqw] border-gray-700 bg-gray-900 shadow-2xl"
+                                    >
+                                        <img
+                                            class="object-cover object-center size-full"
+                                            src="https://img.freepik.com/free-vector/person-using-phone_24908-81116.jpg?semt=ais_hybrid&w=740&q=80"
+                                            alt=""
+                                        />
                                     </div>
                                 </div>
                             </div>
                             <div
-                                class="absolute rounded-lg shadow-sm pointer-events-none inset-px outline outline-black/5 lg:rounded-l-4xl" />
+                                class="absolute rounded-lg shadow-sm pointer-events-none inset-px outline outline-black/5 lg:rounded-l-4xl"
+                            />
+                        </div>
+                        <div class="relative max-lg:row-start-1">
+                            <div
+                                class="absolute bg-white rounded-lg inset-px max-lg:rounded-t-4xl"
+                            />
+                            <div
+                                class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]"
+                            >
+                                <div class="px-8 pt-8 sm:px-10 sm:pt-5">
+                                    <p
+                                        class="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center"
+                                    >
+                                        Fácil de usar
+                                    </p>
+                                    <p
+                                        class="max-w-lg mt-2 text-gray-600 text-sm/6 max-lg:text-center"
+                                    >
+                                        Hemos preparado una experiencia
+                                        intuitiva y divertida para acompañarte
+                                        en tu camino
+                                    </p>
+                                </div>
+                                <div
+                                    class="flex items-center justify-center flex-1 px-8 mt-2 max-lg:pt-10 max-lg:pb-12 sm:px-10 lg:pb-2"
+                                >
+                                    <img
+                                        class="w-full rounded-xl max-lg:max-w-xs"
+                                        src="https://cdn.elearningindustry.com/wp-content/uploads/2024/08/Shutterstock_2492839703.jpg"
+                                        alt=""
+                                    />
+                                </div>
+                            </div>
+                            <div
+                                class="absolute rounded-lg shadow-sm pointer-events-none inset-px outline outline-black/5 max-lg:rounded-t-4xl"
+                            />
+                        </div>
+                        <div
+                            class="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2"
+                        >
+                            <div
+                                class="absolute bg-white rounded-lg inset-px"
+                            />
+                            <div
+                                class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]"
+                            >
+                                <div class="px-8 pt-8 sm:px-10 sm:pt-5">
+                                    <p
+                                        class="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center"
+                                    >
+                                        Contenido actualizado
+                                    </p>
+                                    <p
+                                        class="max-w-lg mt-2 text-gray-600 text-sm/6 max-lg:text-center"
+                                    >
+                                        Encuentra información de calidad que
+                                        potencia tus habilidades académicas
+                                    </p>
+                                </div>
+                                <div
+                                    class="@container flex flex-1 items-center max-lg:py-6 lg:pb-2"
+                                >
+                                    <img
+                                        class="h-[min(152px,40cqw)] object-cover"
+                                        src="https://static.vecteezy.com/system/resources/previews/036/339/043/non_2x/verified-social-media-badge-icons-set-symbols-for-authenticity-and-trust-vector.jpg"
+                                        alt=""
+                                    />
+                                </div>
+                            </div>
+                            <div
+                                class="absolute rounded-lg shadow-sm pointer-events-none inset-px outline outline-black/5"
+                            />
+                        </div>
+                        <div class="relative lg:row-span-2">
+                            <div
+                                class="absolute bg-white rounded-lg inset-px lg:rounded-l-4xl"
+                            />
+                            <div
+                                class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-l-[calc(2rem+1px)]"
+                            >
+                                <div
+                                    class="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0"
+                                >
+                                    <p
+                                        class="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center"
+                                    >
+                                        ¡GRATIS!
+                                    </p>
+                                    <p
+                                        class="max-w-lg mt-2 text-gray-600 text-sm/6 max-lg:text-center"
+                                    >
+                                        No pagues ni un solo centavo, ¡La
+                                        educación no tiene precio!
+                                    </p>
+                                </div>
+                                <div
+                                    class="@container relative min-h-120 w-full grow max-lg:mx-auto max-lg:max-w-sm"
+                                >
+                                    <div
+                                        class="absolute inset-x-0 top-0 bottom-0 overflow-hidden shadow-lg rounded-5xl"
+                                    >
+                                        <img
+                                            class="object-cover object-center size-full"
+                                            src="https://img.freepik.com/free-vector/happy-young-couple-having-fun-girl-guy-dancing-party-celebrating-good-news-flat-illustration_74855-10820.jpg?semt=ais_hybrid&w=740"
+                                            alt=""
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="absolute rounded-lg shadow-sm pointer-events-none inset-px outline outline-black/5 lg:rounded-l-4xl"
+                            />
                         </div>
                     </div>
                 </div>
@@ -371,21 +530,41 @@ const navigation_footer = [
 
         <!-- Footer -->
         <footer class="bg-white">
-            <div class="flex flex-col px-6 py-12 mx-auto gap-7 max-w-7xl md:items-center lg:px-8">
+            <div
+                class="flex flex-col px-6 py-12 mx-auto gap-7 max-w-7xl md:items-center lg:px-8"
+            >
                 <div class="hidden lg:flex lg:gap-x-12">
-                    <a v-for="item in navigation" :key="item.name" :href="item.href"
-                        class="font-semibold text-gray-900 text-sm/6">{{ item.name }}</a>
+                    <a
+                        v-for="item in navigation"
+                        :key="item.name"
+                        :href="item.href"
+                        class="font-semibold text-gray-900 text-sm/6"
+                        >{{ item.name }}</a
+                    >
                 </div>
-                <div class="flex flex-col-reverse items-center justify-between gap-5">
+                <div
+                    class="flex flex-col-reverse items-center justify-between gap-5"
+                >
                     <div class="flex justify-center gap-x-6 md:order-2">
-                        <a v-for="item in navigation_footer" :key="item.name" :href="item.href"
-                            class="text-gray-600 hover:text-gray-800">
+                        <a
+                            v-for="item in navigation_footer"
+                            :key="item.name"
+                            :href="item.href"
+                            class="text-gray-600 hover:text-gray-800"
+                        >
                             <span class="sr-only">{{ item.name }}</span>
-                            <component :is="item.icon" class="size-6" aria-hidden="true" />
+                            <component
+                                :is="item.icon"
+                                class="size-6"
+                                aria-hidden="true"
+                            />
                         </a>
                     </div>
-                    <p class="mt-8 text-center text-gray-600 text-sm/6 md:order-1 md:mt-0">
-                        &copy; {{ añoActual }} EduNova. Todos los derechos reservados.
+                    <p
+                        class="mt-8 text-center text-gray-600 text-sm/6 md:order-1 md:mt-0"
+                    >
+                        &copy; {{ añoActual }} EduNova. Todos los derechos
+                        reservados.
                     </p>
                 </div>
             </div>

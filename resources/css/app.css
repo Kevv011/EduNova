@@ -1,10 +1,165 @@
 /*Importando familias de fuentes de Google Fonts*/
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@plugin "@tailwindcss/forms";
+@import 'tailwindcss';
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
 
 [x-cloak] {
     display: none;
 }
+
+.calendar_searcher {
+  @apply border-gray-300 h-[41px] rounded-md;
+}
+
+.calendar_searcher:focus {
+    @apply border-blue-500 ring-blue-500;
+}
+
+.calendar_searcher::placeholder {
+    @apply text-sm
+}
+
+.dp__input_wrap {
+  @apply rounded-md;
+}
+
+.filepond--item-panel {
+  border-radius: 0.5em;
+}
+
+/* the background color of the file and file panel (used when dropping an image) */
+.filepond--item-panel {
+  background-color: #41495b;
+}
+
+.filepond--wrapper {
+  @apply bg-gray-200 border border-gray-300 border-dashed rounded-lg;
+}
+
+.filepond--drop-label {
+  @apply h-40 bg-gray-200;
+}
+
+.filepond--panel-root {
+  @apply bg-gray-200;
+}
+
+.filepond--credits {
+  display: none;
+}
+
+.style-chooser .vs__dropdown-toggle {
+    @apply w-full px-2 text-sm text-gray-600 bg-white border-0 rounded-md ring-1 ring-inset ring-gray-300;
+    min-height: 2.65rem;
+  }
+
+  .style-chooser .vs__search::placeholder {
+    @apply text-sm border-0;
+  }
+
+  .style-chooser.vs--multiple {
+    @apply rounded-md;
+  }
+
+  .dark .style-chooser.vs--multiple {
+    @apply bg-gray-800;
+  }
+
+  .style-chooser .vs__selected {
+    @apply whitespace-nowrap;
+  }
+
+  .style-chooser .vs__selected-options {
+    @apply overflow-hidden flex-nowrap;
+  }
+
+  .style-chooser.vs--multiple .vs__selected-options {
+    @apply flex-wrap overflow-hidden;
+  }
+
+  .dark .vs--disabled .vs__clear,
+  .vs--disabled .vs__dropdown-toggle,
+  .vs--disabled .vs__open-indicator,
+  .vs--disabled .vs__search,
+  .vs--disabled .vs__selected {
+    @apply bg-transparent opacity-80;
+  }
+
+  .dark .vs__dropdown-toggle {
+    @apply text-white bg-white/5 ring-gray-700;
+  }
+
+  .dark .style-chooser .vs__search::placeholder {
+    @apply text-gray-600;
+  }
+
+  .style-chooser .vs__dropdown-toggle:focus-within {
+    @apply ring-2 ring-blue-500;
+  }
+
+  .style-chooser .vs__search {
+    @apply border-none;
+  }
+
+  .style-chooser .vs__dropdown-menu {
+    @apply text-xs bg-white rounded-bl-lg rounded-br-lg;
+  }
+
+  .style-chooser .vs__dropdown-menu .vs__dropdown-option {
+    padding: 10px 20px;
+  }
+
+  .dark .vs__no-options {
+    @apply text-white;
+  }
+
+  .style-chooser .vs__dropdown-option {
+    @apply w-full text-gray-700;
+    white-space: normal;
+    min-height: 2rem;
+  }
+
+  .style-chooser .vs__clear,
+  .style-chooser .vs__open-indicator {
+    fill: #6b708c;
+  }
+
+  .dark .vs__dropdown-menu {
+    @apply bg-gray-800;
+  }
+
+  .vs__dropdown-option.vs__dropdown-option--highlight {
+    @apply text-white bg-blue-500;
+  }
+
+  .dark .vs__dropdown-option.vs__dropdown-option--highlight {
+    @apply text-white bg-blue-500;
+  }
+
+  .dark .vs__dropdown-option--highlight:hover {
+    @apply text-black;
+  }
+
+  .dark .vs__selected {
+    @apply text-white;
+  }
+
+  .dark .vs__dropdown-option {
+    @apply text-gray-300;
+  }
+
+  [multiple] {
+    @apply p-0 border-none;
+  }
+
+  .vs--multiple .vs__selected-options .vs__selected {
+    @apply px-2 py-0 text-xs text-gray-900 rounded-lg;
+  }

@@ -14,10 +14,12 @@ class Student extends Model
         'date_birth',
         'status',
         'user_id',
+        'interests',
     ];
 
     protected $casts = [
         'date_birth' => 'date',
+        'interests' => 'array',
     ];
 
     // Relacion tabla pivote course_student

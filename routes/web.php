@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RegistrationController;
 use Inertia\Inertia;
 use App\Http\Controllers\LandingController;
 
@@ -15,4 +16,11 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+
+    Route::prefix('registration')->name('registration.')->group(function () {
+        Route::get('/', [RegistrationController::class, 'index'])->name('index');
+        Route::post('/academic-info', [RegistrationController::class, 'academic_information'])->name('academic-info');
+        Route::get('/academic-interests', [RegistrationController::class, 'academic_interest'])->name('academic-interests');
+        Route::put('/academic-interests', [RegistrationController::class, 'interests_info'])->name('interests-info');
+    });
 });
