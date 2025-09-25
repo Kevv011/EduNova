@@ -191,7 +191,7 @@ const submit = () => {
                         </div>
 
                         <!-- Submit -->
-                        <div>
+                        <div class="flex flex-col items-center">
                             <button
                                 type="submit"
                                 :disabled="form.processing"
@@ -202,6 +202,16 @@ const submit = () => {
                                 >
                                 <span v-else>Procesando…</span>
                             </button>
+
+                            <p class="mt-2 text-gray-500 text-sm/6">
+                                ¿Quieres enseñar en nuestra plataforma?
+                                <Link
+                                    :href="route('instructor-requests.create')"
+                                    class="font-semibold text-indigo-600 hover:text-indigo-500"
+                                >
+                                    Registrate
+                                </Link>
+                            </p>
                         </div>
                     </form>
                 </div>

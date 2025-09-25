@@ -5,8 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegistrationController;
 use Inertia\Inertia;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\InstructorRequestController;
 
 Route::get('/', [LandingController::class, 'index'])->name('home');
+
+// Solicitud de instructores
+Route::resource('instructor-requests', InstructorRequestController::class);
 
 Route::middleware([
     'auth:sanctum',

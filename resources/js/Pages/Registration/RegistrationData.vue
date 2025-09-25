@@ -13,7 +13,7 @@ import Steps from "@/Oak/Steps.vue";
 import moment from "moment";
 import Loading from "@/Oak/Loading.vue";
 
-const props = defineProps(["disabled-options", 'user']);
+const props = defineProps(["disabled-options", "user"]);
 
 const isLoading = ref(false);
 
@@ -63,13 +63,15 @@ const academic_levels = [
 
 // Envio de datos
 const handlerStore = () => {
-    form.post(route('registration.academic-info'));
+    form.post(route("registration.academic-info"));
 };
 </script>
 <template>
-    <AppLayout title="¡Bienvenido a EduNova!"
+    <AppLayout
+        title="¡Bienvenido a EduNova!"
         subtitle="Completa tu perfil para acceder a cursos increíbles y comenzar tu viaje de aprendizaje personalizado."
-        :disabled-options="true">
+        :disabled-options="true"
+    >
         <div class="py-12">
             <FormSection @submitted="handlerStore()">
                 <template #title> Completa tu perfil de estudiante </template>
@@ -79,16 +81,26 @@ const handlerStore = () => {
                     cursos adaptados a tu perfil.
 
                     <div class="mt-7">
-                        <Steps :loggers="loggers" campaign="Registro Estudiantil" />
+                        <Steps
+                            :loggers="loggers"
+                            campaign="Registro Estudiantil"
+                        />
                     </div>
                 </template>
                 <template #form>
                     <!-- Nivel academico -->
                     <div class="col-span-6 sm:col-span-6">
                         <InputLabel value="Nivel académico" class="mb-1" />
-                        <Select :options="academic_levels" v-model="form.academic_level" label="label"
-                            track-by="value"></Select>
-                        <InputError :message="form.errors.academic_level" class="mt-2" />
+                        <Select
+                            :options="academic_levels"
+                            v-model="form.academic_level"
+                            label="label"
+                            track-by="value"
+                        ></Select>
+                        <InputError
+                            :message="form.errors.academic_level"
+                            class="mt-2"
+                        />
                     </div>
 
                     <!-- Institucion -->
@@ -98,23 +110,44 @@ const handlerStore = () => {
                             Si no pertenece a una institución educativa, no
                             llenar este campo
                         </p>
-                        <TextInput id="name" v-model="form.institution" type="text" class="block w-full mt-1"
-                            autocomplete="name" />
-                        <InputError :message="form.errors.institution" class="mt-2" />
+                        <TextInput
+                            id="name"
+                            v-model="form.institution"
+                            type="text"
+                            class="block w-full mt-1"
+                            autocomplete="name"
+                        />
+                        <InputError
+                            :message="form.errors.institution"
+                            class="mt-2"
+                        />
                     </div>
 
                     <!-- Date birth -->
                     <div class="col-span-6 sm:col-span-6">
                         <InputLabel for="name" value="Fecha de nacimiento" />
-                        <VueDatePicker v-model="form.date_birth" :clearable="true" auto-apply
-                            :enable-time-picker="false" locale="es" format="dd/MM/yyyy" placeholder="Seleccionar fecha"
-                            :max-date="moment()"></VueDatePicker>
-                        <InputError :message="form.errors.date_birth" class="mt-2" />
+                        <VueDatePicker
+                            v-model="form.date_birth"
+                            :clearable="true"
+                            auto-apply
+                            :enable-time-picker="false"
+                            locale="es"
+                            format="dd/MM/yyyy"
+                            placeholder="Seleccionar fecha"
+                            :max-date="moment()"
+                        ></VueDatePicker>
+                        <InputError
+                            :message="form.errors.date_birth"
+                            class="mt-2"
+                        />
                     </div>
                 </template>
                 <template #actions>
-                    <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
-                        :loading="form.processing">
+                    <PrimaryButton
+                        :class="{ 'opacity-25': form.processing }"
+                        :disabled="form.processing"
+                        :loading="form.processing"
+                    >
                         Guardar
                     </PrimaryButton>
                 </template>

@@ -12,6 +12,7 @@ const colorClass = computed(() => {
   return {
     white: 'text-white',
     orange: 'text-orange-500',
+    blue: 'text-blue-700',
     black: 'text-black',
   }[props.color];
 });
