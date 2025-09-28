@@ -8,11 +8,15 @@ const props = defineProps(["user"]);
 <template>
     <AppLayout
         :title="'¡Bienvenido de vuelta! ' + props.user.name"
-        subtitle="¿Que te gustaria aprender hoy? Explora el contenido mas reciente dentro de EduNova"
+        :subtitle="
+            props.user?.roles?.some((role) => role.name === 'estudiante')
+                ? '¿Que te gustaria aprender hoy? Explora el contenido mas reciente dentro de EduNova'
+                : 'Comparte tu conocimiento y transforma la experiencia educativa de tus alumnos.'
+        "
     >
-        <div class="py-12">
+        <div>
             <div>
-                <div class="overflow-hidden bg-white shadow-xl sm:rounded-lg">
+                <div class="overflow-hidden bg-white">
                     <Welcome />
                 </div>
             </div>

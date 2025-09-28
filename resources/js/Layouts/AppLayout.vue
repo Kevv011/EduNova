@@ -262,7 +262,7 @@ onMounted(() => {
                         <p v-if="subtitle" class="mt-1 text-gray-600 text-md">
                             {{ subtitle }}
                         </p>
-                        <div class="py-10">
+                        <div class="py-5">
                             <slot />
                         </div>
                     </div>

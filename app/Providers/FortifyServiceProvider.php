@@ -61,9 +61,9 @@ class FortifyServiceProvider extends ServiceProvider
             {
                 $user = $request->user();
 
-                if ($user->register_completed === 0) {
+                if ($user->register_completed === 0 && $user->hasRole('estudiante')) {
                     return redirect()->route('registration.index');
-                } elseif ($user->register_completed === 1) {
+                } elseif ($user->register_completed === 1 && $user->hasRole('estudiante')) {
                     return redirect()->route('registration.academic-interests');
                 }
 
