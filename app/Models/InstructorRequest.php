@@ -31,7 +31,6 @@ class InstructorRequest extends Model implements HasMedia
     protected $casts = [
         'subject_specialties' => 'array',
         'schedule_availability' => 'array',
-        'subjects' => 'array',
         'level_education' => 'array',
     ];
 }

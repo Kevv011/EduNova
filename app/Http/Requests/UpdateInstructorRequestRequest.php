@@ -44,7 +44,7 @@ class UpdateInstructorRequestRequest extends FormRequest
             'subjects.min' => 'Describe al menos 50 caracteres sobre las materias que impartes.',
             'level_education.required' => 'Debes especificar a qué nivel educativo está destinada tu enseñanza.',
             'certificates.max' => 'No puedes subir más de 5 certificaciones.',
-            'certificates.*.mimes' => 'Las certificaciones deben ser JPG, PNG o PDF.',
+            'certificates.*.mimes' => 'Las certificaciones deben ser JPG, PNG, JPEG.',
             'certificates.*.max' => 'Cada certificación no puede exceder 2MB.',
         ];
     }

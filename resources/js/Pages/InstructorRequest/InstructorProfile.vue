@@ -122,9 +122,10 @@ const academic_levels = [
 
 // Options de areas de especializacion
 const specialtyOptions = ref([
-    { name: "Educación Tercer ciclo", value: "tercer ciclo" },
-    { name: "Educación Universitaria", value: "universitaria" },
-    { name: "Formación Profesional", value: "profesional" },
+    { name: "Tecnologia", value: "tecnologia" },
+    { name: "Ciencias e investigación", value: "ciencias e investigacion" },
+    { name: "Programación", value: "programacion" },
+    { name: "Matemáticas", value: "matematicas" },
 ]);
 
 // Options de ensenianza destinada a
@@ -427,9 +428,9 @@ const schedules = ref([
                                                 "
                                                 :max-files="5"
                                                 :max-size="2048"
-                                                accept="image/*,.pdf"
+                                                accept="image/*"
                                                 label="Subir certificaciones"
-                                                description="Sube tus títulos, certificados y diplomas (JPG, PNG, PDF - máx. 2MB c/u)"
+                                                description="Sube tus títulos, certificados y diplomas (JPG, PNG, JPEG - máx. 2MB c/u)"
                                             />
                                             <InputError
                                                 :message="
