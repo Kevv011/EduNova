@@ -6,6 +6,7 @@ use App\Http\Controllers\RegistrationController;
 use Inertia\Inertia;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\InstructorRequestController;
+use App\Http\Controllers\CourseController;
 
 Route::get('/', [LandingController::class, 'index'])->name('home');
 
@@ -29,3 +30,6 @@ Route::middleware([
         Route::put('/academic-interests', [RegistrationController::class, 'interests_info'])->name('interests-info');
     });
 });
+
+// Ruta para los cursos
+Route::resource('courses', CourseController::class);

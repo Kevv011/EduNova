@@ -15,6 +15,8 @@ class Course extends Model
         'category_id',
         'instructor_id',
         'areas',
+        'available_status',
+        'authorized',
     ];
 
     protected $casts = [
@@ -38,6 +40,6 @@ class Course extends Model
     // Relacion de FK con Instructors
     public function instructor(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'instructor_id');
+        return $this->belongsTo(Instructor::class, 'instructor_id');
     }
 }

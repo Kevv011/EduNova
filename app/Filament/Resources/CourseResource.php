@@ -68,11 +68,15 @@ class CourseResource extends Resource
                             ->required()
                             ->relationship(
                                 'instructor',
-                                'name',
-                                modifyQueryUsing: fn(Builder $query) => $query->role('instructor')
+                                'id',
+                                modifyQueryUsing: fn(Builder $query) =>
+                                $query->whereHas('user.roles', function ($q) {
+                                    $q->where('name', 'instructor');
+                                })
                             )
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->getOptionLabelFromRecordUsing(fn($record) => $record->user->name ?? 'Sin nombre'),
                     ]),
                 Textarea::make('description')
                     ->label('Descripcion')
@@ -102,7 +106,7 @@ class CourseResource extends Resource
                     ->limit(30),
                 TextColumn::make('category.name')
                     ->label('Categoria'),
-                TextColumn::make('instructor.name')
+                TextColumn::make('instructor.user.name')
                     ->label('Intructor')
                     ->searchable(),
                 TextColumn::make('created_at')
@@ -137,7 +141,7 @@ class CourseResource extends Resource
             'index' => Pages\ListCourses::route('/'),
             'create' => Pages\CreateCourse::route('/create'),
             'edit' => Pages\EditCourse::route('/{record}/edit'),
-            'view' => Pages\ViewCourse::route('/{record}'),
+            'view' => Pages\viewCourse::route('/{record}'),
         ];
     }
 }

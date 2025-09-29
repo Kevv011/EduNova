@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Instructor;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,8 +20,10 @@ class CourseResource extends JsonResource
             'name'         => $this->name,
             'description'  => $this->description,
             'areas'        => $this->areas,
+            'authorized'   => $this->authorized,
+            'available_status' => $this->available_status,
             'category'     => new CategoryResource($this->whenLoaded('category')),
-            'instructor'   => new UserResource($this->whenLoaded('instructor')),
+            'instructor'   => new InstructorResource($this->whenLoaded('instructor')),
             'students'     => $this->whenLoaded('students', function () {
                 return $this->students->map(function ($student) {
                     return [

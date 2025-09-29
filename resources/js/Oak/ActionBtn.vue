@@ -24,6 +24,7 @@ const props = defineProps({
 const classBtn = computed(() => {
   return {
     orange: 'bg-orange-500 text-white hover:bg-orange-600 focus:bg-orange-600 focus:ring-orange-500',
+    blue: 'bg-blue-600 text-white hover:bg-blue-600 focus:bg-blue-600 focus:ring-blue-500',
     outline: 'bg-white border text-gray-700 hover:bg-gray-50 focus:ring-blue-500 border-gray-300'
   }[props.type];
 });

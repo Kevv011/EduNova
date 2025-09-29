@@ -49,7 +49,7 @@ const sidebarNavigation = computed(() => [
     },
     {
         name: "Mis cursos",
-        href: "#",
+        href: route("courses.index"),
         icon: RectangleStackIcon,
         current: route().current("courses.*"),
         visible: !props.disabledOptions,
@@ -157,7 +157,10 @@ onMounted(() => {
                     aria-hidden="true"
                 />
 
-                <div class="flex self-stretch flex-1 gap-x-4 lg:gap-x-6" v-if="user">
+                <div
+                    class="flex self-stretch flex-1 gap-x-4 lg:gap-x-6"
+                    v-if="user"
+                >
                     <div class="flex-1"></div>
                     <div class="flex items-center gap-x-4 lg:gap-x-6">
                         <button
