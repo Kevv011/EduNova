@@ -18,43 +18,84 @@ import Loading from "@/Oak/Loading.vue";
 import AlertWithDescription from "@/Oak/Alerts/WithDescription.vue";
 
 // Props
-const props = defineProps("course");
-
-// UseForm para envio de datos al backend
-const instructorForm = useForm({
-    academic_level: null,
-    subject_specialties: [],
-    schedule_availability: [],
-    subjects: null,
-    level_education: [],
-    certificates: [],
+const props = defineProps({
+    categories: Object,
+    course: Object,
+    instructor: Object,
 });
 
-// Metodo de envio de datos al backend (Segundo form)
-const handlerStoreInstructor = () => {
-    isLoading.value = true;
-    instructorForm
-        .transform((data) => ({
-            ...data,
-            _method: "PUT",
-        }))
-        .post(
-            route("instructor-requests.update", props.instructorRequest?.id),
-            {
-                preserveScroll: true,
-                forceFormData: true,
-                onBefore: () => {
-                    console.log("Antes de enviar...");
-                },
-                onSuccess: () => {
-                    secondSubmitted.value = true;
-                },
-                onFinish: () => {
-                    isLoading.value = false;
-                },
-            }
-        );
+// Normalizacion
+const courseData = computed(() => props.course?.data ?? props.course ?? null);
+const instructorData = computed(
+    () => props.instructor?.data ?? props.instructor ?? null
+);
+const categoriesData = computed(
+    () => props.categories?.data ?? props.categories ?? []
+);
+const courseId = computed(() => courseData.value?.id ?? null);
+
+// UseForm para envio de datos al backend
+const form = useForm({
+    name: courseData.value?.name ?? null,
+    description: courseData.value?.description ?? null,
+    category_id: courseData.value?.category?.id ?? null,
+    areas: courseData.value?.areas ?? [],
+    image: null,
+    instructor_id: instructorData.value?.id ?? null,
+});
+
+// Foto de curso
+const photoPreview = ref(null);
+const photoInput = ref(null);
+
+const updatePhotoPreview = () => {
+    const file = photoInput.value?.files?.[0];
+    if (!file) return;
+
+    // preview
+    const reader = new FileReader();
+    reader.onload = (e) => (photoPreview.value = e.target.result);
+    reader.readAsDataURL(file);
+
+    form.image = file;
 };
+const selectNewPhoto = () => photoInput.value?.click();
+
+// URL final de la imagen guardada
+const savedPhotoUrl = computed(() => {
+    return props.course?.data.image ?? "/images/user-default.jpeg";
+});
+
+// Categories traidas del backend
+const CategoryOptions = computed(() => props.categories.data);
+
+// Metodo de envio de datos al backend
+const handlerStoreCourse = () => {
+    form.post(route("courses.store"), {
+        preserveScroll: true,
+        forceFormData: true,
+    });
+};
+
+const handlerUpdateCourse = () => {
+    form.transform((data) => {
+        const payload = { ...data, _method: "PUT" };
+        if (!(data.image instanceof File)) delete payload.image;
+        return payload;
+    }).post(route("courses.update", courseId.value), {
+        preserveScroll: true,
+        forceFormData: true,
+        onError: (e) => console.log("Errores:", e),
+        onSuccess: () => console.log("Actualización exitosa"),
+    });
+};
+
+const academicAreas = ref([
+    { name: "Programación", value: "programacion" },
+    { name: "Aritmetica", value: "aritmetica" },
+    { name: "Algoritmos", value: "algoritmos" },
+    { name: "Fisica del movimiento", value: "fisica del movimiento" },
+]);
 </script>
 <template>
     <AppLayout
@@ -80,141 +121,155 @@ const handlerStoreInstructor = () => {
             sana y enriquecedora!
         </AlertWithDescription>
 
+        <!-- <pre>{{ instructor.data.id }}</pre> -->
+
         <!-- Formulario -->
         <DoubleFormSection
-            @submitted="handlerStoreInstructor"
-            left-title="Perfil académico y profesional"
-            left-subtitle="Formación del tutor"
-            right-title="Preferencias"
-            right-subtitle="Datos adicionales relevantes del tutor"
+            @submitted="
+                props.course ? handlerUpdateCourse() : handlerStoreCourse()
+            "
+            left-title="Información general del curso"
+            left-subtitle="Completa los datos principales para describir y presentar tu nuevo curso a los estudiantes."
+            right-title="Detalles académicos"
+            right-subtitle="Indica claramente las expectativas y requisitos académicos para asegurar una experiencia educativa óptima."
         >
             <!-- Lado izquierdo -->
             <template #left-form>
-                <!-- Nivel academico alcanzado -->
-                <div class="col-span-6 sm:col-span-6">
-                    <InputLabel
-                        value="Nivel académico"
-                        class="mb-1 text-white"
-                    />
-                    <Select
-                        :options="academic_levels"
-                        v-model="instructorForm.academic_level"
-                        label="label"
-                        track-by="value"
-                        class="text-black"
-                    ></Select>
-                    <InputError
-                        :message="instructorForm.errors.academic_level"
-                        class="mt-2"
-                    />
-                </div>
-
-                <!-- Areas de especializacion -->
-                <div class="col-span-6 sm:col-span-6">
-                    <InputLabel
-                        value="Areas de especialización"
-                        class="mb-1 text-white"
-                    />
-                    <Select
-                        :options="specialtyOptions"
-                        v-model="instructorForm.subject_specialties"
-                        mode="tags"
-                        :multiple="true"
-                        :close-on-select="false"
-                        label="name"
-                        track-by="value"
-                        class="text-black"
-                    ></Select>
-                    <InputError
-                        :message="instructorForm.errors.subject_specialties"
-                        class="mt-2"
-                    />
-                </div>
-
-                <!-- Certificaciones y titulos -->
-                <div class="col-span-6 sm:col-span-6">
-                    <InputLabel
-                        value="Certificaciones y títulos"
-                        class="mb-2 text-white"
-                    />
-                    <FileUpload
-                        v-model="instructorForm.certificates"
-                        :max-files="5"
-                        :max-size="2048"
+                <!-- Foto del curso -->
+                <div class="flex flex-col items-center">
+                    <!-- File input -->
+                    <input
+                        id="photo"
+                        ref="photoInput"
+                        type="file"
+                        class="hidden"
                         accept="image/*"
-                        label="Subir certificaciones"
-                        description="Sube tus títulos, certificados y diplomas (JPG, PNG, JPEG - máx. 2MB c/u)"
+                        @change="updatePhotoPreview"
+                    />
+                    <InputLabel
+                        for="photo"
+                        value="Foto del curso"
+                        class="text-white"
+                    />
+
+                    <!-- Foto actual -->
+                    <div v-show="!photoPreview" class="flex items-center mt-2">
+                        <img
+                            :src="savedPhotoUrl"
+                            alt="Foto actual"
+                            class="object-cover rounded-lg shadow-xl size-48"
+                        />
+                    </div>
+
+                    <!-- Nueva foto del curso -->
+                    <div v-show="photoPreview" class="mt-2">
+                        <span
+                            class="block bg-center bg-no-repeat bg-cover rounded-full size-48"
+                            :style="`background-image: url('${photoPreview}')`"
+                        />
+                    </div>
+
+                    <SecondaryButton
+                        class="mt-7 me-2"
+                        type="button"
+                        @click.prevent="selectNewPhoto"
+                    >
+                        Seleccionar foto
+                    </SecondaryButton>
+
+                    <InputError :message="form.errors.image" class="mt-2" />
+                </div>
+
+                <!-- Nombre del curso -->
+                <div class="col-span-6 sm:col-span-3">
+                    <InputLabel
+                        for="name"
+                        value="Nombre del curso"
+                        class="text-white"
+                    />
+                    <TextInput
+                        id="name"
+                        v-model="form.name"
+                        type="text"
+                        class="block w-full mt-1 text-black"
+                        autocomplete="name"
+                    />
+                    <InputError :message="form.errors.name" class="mt-2" />
+                </div>
+
+                <!-- Categoria -->
+                <div class="col-span-6 sm:col-span-6">
+                    <InputLabel
+                        value="Categoria principal"
+                        class="mb-1 text-white"
+                    />
+                    <Select
+                        :options="categoriesData"
+                        v-model="form.category_id"
+                        valueProp="id"
+                        label="name"
+                        :searchable="true"
+                        placeholder="Seleccionar opción..."
+                        class="text-dark"
                     />
                     <InputError
-                        :message="instructorForm.errors.certificates"
-                        class="mt-2 text-red-300"
+                        :message="form.errors.category_id"
+                        class="mt-2"
                     />
                 </div>
             </template>
 
             <!-- Lado derecho (fondo blanco) -->
             <template #right-form>
-                <!-- Disponibilidad de horarios -->
+                <!-- Descripcion -->
                 <div class="col-span-6 sm:col-span-6">
                     <InputLabel
-                        value="Disponibilidad de horario"
-                        class="mb-1"
+                        for="description"
+                        value="Descripción del curso"
                     />
-                    <p class="mb-1 text-sm text-gray-500">
-                        Selecciona tu disponibilidad semanal para impartir
-                        instructorias o atender consultas. Una vez aprobada tu
-                        solicitud, podrás establecer los horarios detallados
-                        para cada día.
-                    </p>
-                    <Select
-                        :options="schedules"
-                        v-model="instructorForm.schedule_availability"
-                        mode="tags"
-                        :multiple="true"
-                        :close-on-select="false"
-                        label="name"
-                        track-by="value"
-                        class="text-black"
-                    ></Select>
-                    <InputError
-                        :message="instructorForm.errors.schedule_availability"
-                        class="mt-2"
-                    />
-                </div>
-
-                <!-- Materias a impartir -->
-                <div class="col-span-6 sm:col-span-6">
-                    <InputLabel for="biography" value="Materias que imparte" />
                     <Textarea
-                        id="biography"
-                        v-model="instructorForm.subjects"
+                        id="description"
+                        v-model="form.description"
                         class="block w-full mt-1"
                         rows="4"
-                        placeholder="Detalla las materias y temas específicos que te sientes capacitado para enseñar..."
+                        placeholder="Proporciona una descripción clara y concisa sobre este nuevo curso..."
                     />
                     <InputError
-                        :message="instructorForm.errors.subjects"
+                        :message="form.errors.description"
                         class="mt-2"
                     />
                 </div>
 
-                <!-- Enseñanza destinada a -->
+                <!-- Areas academicas -->
                 <div class="col-span-6 sm:col-span-6">
-                    <InputLabel value="Enseñanza destinada a" class="mb-1" />
+                    <InputLabel value="Areas academicas" class="mb-1" />
+                    <p class="my-3 text-sm text-gray-500">
+                        Selecciona cuidadosamente las áreas académicas que este
+                        curso abordará. Sé preciso y claro, ya que esta
+                        información será utilizada para recomendar el curso a
+                        los estudiantes más adecuados. Recuerda que una
+                        selección correcta ayuda a mejorar la experiencia
+                        educativa y facilita que tu curso llegue a quienes
+                        realmente lo necesitan.
+                    </p>
                     <Select
-                        :options="education_to"
-                        v-model="instructorForm.level_education"
+                        :options="academicAreas"
+                        v-model="form.areas"
                         mode="tags"
                         :multiple="true"
                         :close-on-select="false"
                         label="name"
                         track-by="value"
+                        :createTag="true"
                         class="text-black"
-                    ></Select>
-                    <InputError
-                        :message="instructorForm.errors.level_education"
-                        class="mt-2"
                     />
+                    <div class="mt-1 text-sm text-gray-500">
+                        <p>
+                            Si deseas colocar una nueva area academica,
+                            escribela y presiona "ENTER" para adicionarla.
+                        </p>
+                    </div>
+                    <InputError :message="form.errors.areas" class="mt-2" />
                 </div>
             </template>
 
@@ -222,11 +277,11 @@ const handlerStoreInstructor = () => {
             <template #actions>
                 <button
                     type="submit"
-                    :disabled="instructorForm.processing"
+                    :disabled="form.processing"
                     class="inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <svg
-                        v-if="instructorForm.processing"
+                        v-if="form.processing"
                         class="w-4 h-4 mr-3 -ml-1 text-white animate-spin"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -247,10 +302,10 @@ const handlerStoreInstructor = () => {
                         ></path>
                     </svg>
 
-                    <span v-if="instructorForm.processing"
-                        >Enviando solicitud...</span
-                    >
-                    <span v-else>Enviar Solicitud</span>
+                    <span v-if="form.processing">Enviando solicitud...</span>
+                    <span v-else>{{
+                        props.course ? "Actualizar" : "Enviar Solicitud"
+                    }}</span>
                 </button>
             </template>
         </DoubleFormSection>

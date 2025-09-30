@@ -113,7 +113,7 @@ class InstructorRequestResource extends Resource
             'index' => Pages\ListInstructorRequests::route('/'),
             'create' => Pages\CreateInstructorRequest::route('/create'),
             'edit' => Pages\EditInstructorRequest::route('/{record}/edit'),
-            'view' => Pages\viewInstructorRequest::route('/{record}'),
+            'view' => Pages\ViewInstructorRequest::route('/{record}'),
         ];
     }
 

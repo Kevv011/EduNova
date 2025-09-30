@@ -76,4 +76,10 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasRole('admin') && str_ends_with($this->email, '@admin.com');
     }
+
+    // Relacion con Instructors
+    public function instructor()
+    {
+        return $this->hasOne(Instructor::class);
+    }
 }

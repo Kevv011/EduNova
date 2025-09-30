@@ -21,7 +21,10 @@ import {
 } from "@heroicons/vue/24/outline";
 
 // Props
-const props = defineProps(["courses", "filters"]);
+const props = defineProps({
+    courses: { type: Object, required: true },
+    filters: { type: Object, default: () => ({}) },
+});
 
 // Filters
 const query = useFilters(
@@ -118,10 +121,8 @@ const pages = [
             </GroupInput>
         </div>
 
-        <!-- <pre>{{ courses }}</pre> -->
-
         <!-- Tabla de contenido -->
-        <OakTable :headers="headers" :items="courses">
+        <OakTable :headers="headers" :items="props.courses">
             <!-- available_status -->
             <template #available_status="{ item }">
                 <div
