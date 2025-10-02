@@ -1,8 +1,9 @@
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { Link } from "@inertiajs/vue3";
 import moment from "moment";
+import OakTabs from "@/Oak/Navigation/Tabs.vue";
 import {
     CheckCircleIcon,
     XCircleIcon,
@@ -27,9 +28,9 @@ const areas = computed(() => {
     return Array.isArray(a)
         ? a
         : String(a)
-              .split(",")
-              .map((s) => s.trim())
-              .filter(Boolean);
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
 });
 const imageUrl = computed(
     () => courseData.value?.image ?? "/images/user-default.jpeg"
@@ -60,48 +61,55 @@ const authorizedIcon = computed(() =>
     authorized.value === "authorized"
         ? CheckCircleIcon
         : authorized.value === "rejected"
-        ? XCircleIcon
-        : ExclamationCircleIcon
+            ? XCircleIcon
+            : ExclamationCircleIcon
 );
 const authorizedColor = computed(() =>
     authorized.value === "authorized"
         ? "text-green-600 bg-green-100"
         : authorized.value === "rejected"
-        ? "text-red-600 bg-red-100"
-        : "text-yellow-600 bg-yellow-100"
+            ? "text-red-600 bg-red-100"
+            : "text-yellow-600 bg-yellow-100"
 );
 
 // Rutas
 const courseId = computed(() => courseData.value?.id);
+
+// Tabs de navegacion
+const tabs = ref([
+    {
+        name: "Modulos",
+        href: route("courses.modules", courseData.value.id),
+        current: true,
+    },
+    {
+        name: "Estudiantes",
+        href: route("courses.students", courseData.value.id),
+        current: false,
+    },
+]);
 </script>
 
 <template>
-    <AppLayout
-        :title="courseData?.name ?? 'Curso'"
-        subtitle="Detalle del curso"
-        :pages="[
-            {
-                name: 'Mis cursos',
-                href: route('courses.index'),
-                current: false,
-            },
-            {
-                name: courseData?.name ?? 'Curso',
-                href: route('courses.show', courseId),
-                current: true,
-            },
-        ]"
-    >
+    <AppLayout :title="courseData?.name ?? 'Curso'" subtitle="Detalle del curso" :pages="[
+        {
+            name: 'Mis cursos',
+            href: route('courses.index'),
+            current: false,
+        },
+        {
+            name: courseData?.name ?? 'Curso',
+            href: route('courses.show', courseId),
+            current: true,
+        },
+    ]">
         <div class="flex items-center justify-between mb-6">
             <div></div>
 
             <div class="flex items-center gap-2">
-                <Link
-                    v-if="courseId"
-                    :href="route('courses.edit', courseId)"
-                    class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-700 rounded-lg bg-blue-50 hover:bg-blue-100"
-                >
-                    <PencilIcon class="w-4 h-4" /> Editar
+                <Link v-if="courseId" :href="route('courses.edit', courseId)"
+                    class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-700 rounded-lg bg-blue-50 hover:bg-blue-100">
+                <PencilIcon class="w-4 h-4" /> Editar
                 </Link>
             </div>
         </div>
@@ -110,11 +118,7 @@ const courseId = computed(() => courseData.value?.id);
             <!-- Columna imagen -->
             <div class="md:col-span-1">
                 <div class="overflow-hidden bg-white border rounded-2xl">
-                    <img
-                        :src="imageUrl"
-                        alt="Imagen del curso"
-                        class="object-cover w-full aspect-video"
-                    />
+                    <img :src="imageUrl" alt="Imagen del curso" class="object-cover w-full aspect-video" />
                 </div>
             </div>
 
@@ -126,32 +130,26 @@ const courseId = computed(() => courseData.value?.id);
                     </h1>
 
                     <div class="flex flex-wrap items-center gap-2 mb-4">
-                        <span
-                            class="px-2.5 py-1 text-xs font-medium rounded-lg bg-gray-100 text-gray-700"
-                        >
+                        <span class="px-2.5 py-1 text-xs font-medium rounded-lg bg-gray-100 text-gray-700">
                             Categoría: {{ categoryName }}
                         </span>
 
-                        <span
-                            :class="[
-                                'px-2.5 py-1 text-xs font-medium rounded-lg',
-                                availabilityClass,
-                            ]"
-                        >
+                        <span :class="[
+                            'px-2.5 py-1 text-xs font-medium rounded-lg',
+                            availabilityClass,
+                        ]">
                             {{ availabilityText }}
                         </span>
 
-                        <span
-                            class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg"
-                            :class="authorizedColor"
-                        >
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg"
+                            :class="authorizedColor">
                             <component :is="authorizedIcon" class="w-4 h-4" />
                             {{
                                 authorized === "authorized"
                                     ? "Autorizado"
                                     : authorized === "rejected"
-                                    ? "Rechazado"
-                                    : "Pendiente"
+                                        ? "Rechazado"
+                                        : "Pendiente"
                             }}
                         </span>
                     </div>
@@ -170,11 +168,8 @@ const courseId = computed(() => courseData.value?.id);
                             Áreas académicas
                         </h2>
                         <div class="flex flex-wrap gap-2">
-                            <span
-                                v-for="(area, i) in areas"
-                                :key="i"
-                                class="px-2 py-0.5 text-xs bg-gray-100 rounded-md text-gray-700"
-                            >
+                            <span v-for="(area, i) in areas" :key="i"
+                                class="px-2 py-0.5 text-xs bg-gray-100 rounded-md text-gray-700">
                                 {{ area }}
                             </span>
                         </div>
@@ -197,32 +192,28 @@ const courseId = computed(() => courseData.value?.id);
                 </div>
 
                 <!-- Bloque Estudiantes -->
-                <div
-                    v-if="
-                        Array.isArray(courseData?.students) &&
-                        courseData.students.length
-                    "
-                    class="p-5 mt-4 bg-white border rounded-2xl"
-                >
+                <!-- <div v-if="
+                    Array.isArray(courseData?.students) &&
+                    courseData.students.length
+                " class="p-5 mt-4 bg-white border rounded-2xl">
                     <h2 class="mb-2 text-sm font-semibold text-gray-700">
                         Estudiantes
                     </h2>
                     <ul class="space-y-2 text-gray-800">
-                        <li
-                            v-for="s in courseData.students"
-                            :key="s.id"
-                            class="flex items-center justify-between"
-                        >
+                        <li v-for="s in courseData.students" :key="s.id" class="flex items-center justify-between">
                             <span class="truncate">{{
                                 s.name ?? "ID #" + s.id
-                            }}</span>
+                                }}</span>
                             <span class="text-xs text-gray-500">
                                 Progreso: {{ s.pivot?.progress ?? 0 }}%
                             </span>
                         </li>
                     </ul>
-                </div>
+                </div> -->
             </div>
+
+            <!-- Tabs de navegacion -->
+            <OakTabs :tabs="tabs" />
         </div>
     </AppLayout>
 </template>

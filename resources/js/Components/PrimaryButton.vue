@@ -35,7 +35,12 @@ const props = defineProps({
 
 const colorClasses = {
     blue: "bg-indigo-600 hover:bg-indigo-800 focus:bg-gray-700 active:bg-gray-900 focus:ring-indigo-500",
+    lightblue:
+        "bg-blue-500 hover:bg-blue-600 focus:bg-gray-500 active:bg-gray-700 focus:ring-blue-300",
     orange: "bg-orange-500 hover:bg-orange-600 focus:bg-orange-700 active:bg-orange-800 focus:ring-orange-400",
+    red: "bg-red-500 hover:bg-red-600 focus:bg-red-700 active:bg-red-800 focus:ring-red-400",
+    yellow: "bg-yellow-500 hover:bg-yellow-600 focus:bg-yellow-700 active:bg-yellow-800 focus:ring-yellow-400",
+    green: "bg-green-500 hover:bg-green-600 focus:bg-green-700 active:bg-green-800 focus:ring-green-400",
 };
 
 const classBtn = computed(() => {

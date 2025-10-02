@@ -6,6 +6,7 @@ use App\Http\Controllers\RegistrationController;
 use Inertia\Inertia;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\InstructorRequestController;
+use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\CourseController;
 
 Route::get('/', [LandingController::class, 'index'])->name('home');
@@ -29,7 +30,16 @@ Route::middleware([
         Route::get('/academic-interests', [RegistrationController::class, 'academic_interest'])->name('academic-interests');
         Route::put('/academic-interests', [RegistrationController::class, 'interests_info'])->name('interests-info');
     });
-});
 
-// Ruta para los cursos
-Route::resource('courses', CourseController::class);
+    // Ruta para los cursos
+    Route::resource('courses', CourseController::class);
+    Route::prefix('courses/{course}')->name('courses.')->group(function () {
+        Route::get('/students', [CourseController::class, 'students'])->name('students');
+        Route::get('/modules', [CourseController::class, 'modules'])->name('modules');
+    });
+
+    // Ruta para modulos
+    Route::resource('modules', ModuleController::class);
+    Route::put('/modules/{module}/disable', [ModuleController::class, 'disable'])->name('modules.disable');
+    Route::put('/modules/{module}/enable', [ModuleController::class, 'enable'])->name('modules.enable');
+});

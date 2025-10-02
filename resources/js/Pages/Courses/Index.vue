@@ -202,7 +202,7 @@ const pages = [
             <template #actions="{ item }">
                 <div class="flex justify-end">
                     <ActionBtn
-                        :href="route('courses.show', item.id)"
+                        :href="route('courses.modules', item.id)"
                         tag="a"
                         type="blue"
                         :icon="EyeIcon"

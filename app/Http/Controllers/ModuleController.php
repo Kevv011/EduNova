@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Module;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreUpdateModuleRequest;
 
 class ModuleController extends Controller
 {
@@ -26,9 +27,23 @@ class ModuleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUpdateModuleRequest $request)
     {
-        //
+        $moduleData = $request->validated();
+
+        $lastNumber = Module::where('course_id', $moduleData['id_course'])->max('number_module') ?? 0;
+        $number_module = $lastNumber + 1;
+
+        Module::create([
+            'title' => $moduleData['title'],
+            'description' => $moduleData['description'],
+            'number_module' => $number_module,
+            'course_id' => $moduleData['id_course'],
+        ]);
+
+        return redirect()
+            ->route('courses.modules', $moduleData['id_course'])
+            ->with('success', 'Nuevo modulo: ' . $moduleData['title']);
     }
 
     /**
@@ -50,9 +65,15 @@ class ModuleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Module $module)
+    public function update(StoreUpdateModuleRequest $request, Module $module)
     {
-        //
+        $moduleData = $request->validated();
+
+        $module->update($moduleData);
+
+        return redirect()
+            ->route('courses.modules', $module->course_id)
+            ->with('success', 'Modulo actualizado: ' . $moduleData['title']);
     }
 
     /**
@@ -60,6 +81,31 @@ class ModuleController extends Controller
      */
     public function destroy(Module $module)
     {
-        //
+        $courseId = $module->course_id;
+        $module->delete();
+
+        return redirect()
+            ->route('courses.modules', $courseId)
+            ->with('success', 'Módulo eliminado correctamente.');
+    }
+
+    public function disable(Module $module)
+    {
+        $module->status = 0;
+        $module->save();
+
+        return redirect()
+            ->route('courses.modules', $module->course_id)
+            ->with('success', 'Módulo deshabilitado correctamente.');
+    }
+
+    public function enable(Module $module)
+    {
+        $module->status = 1;
+        $module->save();
+
+        return redirect()
+            ->route('courses.modules', $module->course_id)
+            ->with('success', 'Módulo habilitado correctamente.');
     }
 }

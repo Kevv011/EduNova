@@ -1,7 +1,8 @@
 <script setup>
-import Modal from './Modal.vue';
+import { XMarkIcon } from "@heroicons/vue/24/outline";
+import Modal from "./Modal.vue";
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(["close"]);
 
 defineProps({
     show: {
@@ -10,7 +11,7 @@ defineProps({
     },
     maxWidth: {
         type: String,
-        default: '2xl',
+        default: "4sxl",
     },
     closeable: {
         type: Boolean,
@@ -19,7 +20,7 @@ defineProps({
 });
 
 const close = () => {
-    emit('close');
+    emit("close");
 };
 </script>
 
@@ -31,8 +32,23 @@ const close = () => {
         @close="close"
     >
         <div class="px-6 py-4">
-            <div class="text-lg font-medium text-gray-900">
-                <slot name="title" />
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="text-lg font-medium text-gray-900">
+                        <slot name="title" />
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        <slot name="subtitle" />
+                    </div>
+                </div>
+                <button
+                    type="button"
+                    class="focus:outline-none"
+                    v-if="closeable"
+                    @click="close"
+                >
+                    <XMarkIcon class="w-5 h-5 text-black" />
+                </button>
             </div>
 
             <div class="mt-4 text-sm text-gray-600">

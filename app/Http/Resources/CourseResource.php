@@ -30,6 +30,7 @@ class CourseResource extends JsonResource
                     return [
                         'id'    => $student->id,
                         'name'  => $student->user->name ?? null,
+                        'student_info' => new StudentResource($student),
                         'pivot' => [
                             'incription_date' => $student->pivot->incription_date,
                             'progress'        => $student->pivot->progress,

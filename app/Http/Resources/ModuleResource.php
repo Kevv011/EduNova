@@ -19,7 +19,9 @@ class ModuleResource extends JsonResource
             'title'         => $this->title,
             'description'   => $this->description,
             'number_module' => $this->number_module,
+            'status'        => $this->status,
             'course'        => new CourseResource($this->whenLoaded('course')),
+            'lessons' => LessonResource::collection($this->whenLoaded('lessons')),
             'created_at'    => $this->created_at,
             'updated_at'    => $this->updated_at,
         ];

@@ -11,8 +11,10 @@ use Spatie\QueryBuilder\AllowedFilter;
 use App\Filters\CourseFilter;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\InstructorResource;
+use App\Http\Resources\ModuleResource;
 use App\Models\Category;
 use App\Models\Instructor;
+use App\Models\Module;
 use App\Http\Requests\StoreCourseRequest;
 use App\Http\Requests\UpdateCourseRequest;
 
@@ -116,5 +118,24 @@ class CourseController extends Controller
     public function destroy(Course $course)
     {
         //
+    }
+
+    public function students(Course $course)
+    {
+        return Inertia::render('Courses/Students', [
+            'course' => new CourseResource($course->load(['category', 'instructor', 'students'])),
+        ]);
+    }
+
+    public function modules(Course $course)
+    {
+        $modules = Module::with('lessons')
+            ->where('course_id', $course->id)
+            ->get();
+
+        return Inertia::render('Courses/Modules', [
+            'course' => new CourseResource($course->load(['category', 'instructor', 'students'])),
+            'modules' => ModuleResource::collection($modules),
+        ]);
     }
 }
