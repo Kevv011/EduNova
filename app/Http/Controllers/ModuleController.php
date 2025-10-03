@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Module;
+use App\Models\Lesson;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreUpdateModuleRequest;
+use Inertia\Inertia;
+use App\Http\Resources\LessonResource;
+use App\Http\Resources\ModuleResource;
 
 class ModuleController extends Controller
 {
@@ -107,5 +111,14 @@ class ModuleController extends Controller
         return redirect()
             ->route('courses.modules', $module->course_id)
             ->with('success', 'Módulo habilitado correctamente.');
+    }
+
+    public function lessons(Module $module)
+    {
+        $module = Module::with(['lessons', 'course'])->find($module->id);
+
+        return Inertia::render('Lessons/Index', [
+            'module' => new ModuleResource($module),
+        ]);
     }
 }

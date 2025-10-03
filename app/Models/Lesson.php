@@ -12,6 +12,11 @@ class Lesson extends Model
         'title',
         'content',
         'module_id',
+        'url_resource',
+    ];
+
+    protected $casts = [
+        'url_resource' => 'array',
     ];
 
     // Relacion de FK con Modules

@@ -499,16 +499,19 @@ const handlerDeleteModule = () => {
                                                 class="flex items-center justify-center gap-2 p-2 transition bg-white shrink-0 rounded-xl group-hover:border-gray-300"
                                                 aria-hidden="true"
                                             >
-                                                <SecondaryButton
+                                                <Link
+                                                    :href="route('modules.lessons', mod.id)"
+                                                    class="px-4 py-2 border border-gray-500 rounded-lg"
                                                     color="lightblue"
                                                     v-tooltip="
                                                         'Agregar lecciones'
                                                     "
+
                                                 >
                                                     <PlusIcon
                                                         class="w-4 h-4 mr-1"
                                                     />
-                                                </SecondaryButton>
+                                                </Link>
                                                 <PrimaryButton
                                                     color="lightblue"
                                                     v-tooltip="'Editar'"

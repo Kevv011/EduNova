@@ -18,6 +18,7 @@ class LessonResource extends JsonResource
             'id'        => $this->id,
             'title'     => $this->title,
             'content'   => $this->content,
+            'url_resource' => $this->url_resource,
             'module'    => new ModuleResource($this->whenLoaded('module')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

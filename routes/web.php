@@ -8,6 +8,7 @@ use App\Http\Controllers\LandingController;
 use App\Http\Controllers\InstructorRequestController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\LessonController;
 
 Route::get('/', [LandingController::class, 'index'])->name('home');
 
@@ -40,6 +41,12 @@ Route::middleware([
 
     // Ruta para modulos
     Route::resource('modules', ModuleController::class);
-    Route::put('/modules/{module}/disable', [ModuleController::class, 'disable'])->name('modules.disable');
-    Route::put('/modules/{module}/enable', [ModuleController::class, 'enable'])->name('modules.enable');
+    Route::prefix('/modules/{module}')->name('modules.')->group(function () {
+        Route::put('/disable', [ModuleController::class, 'disable'])->name('disable');
+        Route::put('/enable', [ModuleController::class, 'enable'])->name('enable');
+        Route::get('lessons', [ModuleController::class, 'lessons'])->name('lessons');
+    });
+
+    // Ruta para Lessons
+    Route::resource('lessons', LessonController::class);
 });

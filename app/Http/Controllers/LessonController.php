@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Lesson;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreUpdateLessonRequest;
 
 class LessonController extends Controller
 {
@@ -26,9 +27,15 @@ class LessonController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUpdateLessonRequest $request)
     {
-        //
+        $lessonData = $request->validated();
+
+        $lesson = Lesson::create($lessonData);
+
+        return redirect()
+            ->route('modules.lessons', $lessonData['module_id'])
+            ->with('success', 'Lección creada correctamente.');
     }
 
     /**
@@ -50,9 +57,15 @@ class LessonController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Lesson $lesson)
+    public function update(StoreUpdateLessonRequest $request, Lesson $lesson)
     {
-        //
+        $lessonData = $request->validated();
+
+        $lesson->update($lessonData);
+
+        return redirect()
+            ->route('modules.lessons', $lesson->module_id)
+            ->with('success', 'Lección actualizada correctamente.');
     }
 
     /**
@@ -60,6 +73,8 @@ class LessonController extends Controller
      */
     public function destroy(Lesson $lesson)
     {
-        //
+        $lesson->delete();
+
+        return redirect()->back();
     }
 }
