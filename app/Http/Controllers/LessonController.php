@@ -130,6 +130,32 @@ class LessonController extends Controller
         }
     }
 
+    public function reorder(Request $request)
+    {
+        $validated = $request->validate([
+            'lessons' => 'required|array',
+            'lessons.*.id' => 'required|exists:lessons,id',
+            'lessons.*.position' => 'required|integer|min:1',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            foreach ($validated['lessons'] as $lesson) {
+                Lesson::where('id', $lesson['id'])
+                    ->update(['position' => $lesson['position']]);
+            }
+            DB::commit();
+
+            return redirect()->back()->with('flash', [
+                'bannerStyle' => 'success',
+                'banner' => 'Orden de lecciones actualizado correctamente.',
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Error al reordenar lecciones.']);
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      */

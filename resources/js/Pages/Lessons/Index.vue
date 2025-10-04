@@ -4,7 +4,7 @@ import { computed, ref, watch, onMounted } from "vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import DialogModal from "@/Components/DialogModal.vue";
-import { useForm } from "@inertiajs/vue3";
+import { useForm, router } from "@inertiajs/vue3";
 import FormSection2 from "@/Components/FormSection2.vue";
 import TextInput from "@/Components/TextInput.vue";
 import Textarea from "@/Oak/Textarea.vue";
@@ -13,6 +13,7 @@ import InputError from "@/Components/InputError.vue";
 import FileUpload from "@/Components/FileUpload.vue";
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/vue";
 import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/vue/24/outline";
+import draggable from "vuedraggable";
 
 // Props
 const props = defineProps({
@@ -350,12 +351,6 @@ const documentResources = computed(() => {
     return [...pdfs, ...urls];
 });
 
-const resourceTabs = computed(() => ({
-    "Video explicativo": videoResources.value,
-    "Recursos visuales": imageResources.value,
-    "Enlaces y recursos PDF": documentResources.value,
-}));
-
 const availableTabs = computed(() => {
     const tabs = {};
 
@@ -373,6 +368,39 @@ const availableTabs = computed(() => {
 
     return tabs;
 });
+
+// Manejo de ordenamiento de LESSONS con Draggable Vue
+const localLessons = ref([]);
+
+// Sincronizacion con las lecciones del backend
+watch(
+    lessons,
+    (newLessons) => {
+        localLessons.value = [...newLessons];
+    },
+    { immediate: true }
+);
+
+// Método para guardar el nuevo orden
+const saveOrder = () => {
+    const ordered = localLessons.value.map((lesson, index) => ({
+        id: lesson.id,
+        position: index + 1,
+    }));
+
+    router.post(
+        route("lessons.reorder"),
+        { lessons: ordered },
+        {
+            preserveScroll: true,
+        }
+    );
+};
+
+// Detecta cambios en el orden
+const handleDragEnd = () => {
+    saveOrder();
+};
 </script>
 
 <template>
@@ -604,18 +632,6 @@ const availableTabs = computed(() => {
                                                                 class="text-sm font-medium text-gray-900"
                                                             >
                                                                 {{ video.name }}
-                                                            </p>
-                                                            <p
-                                                                class="text-xs text-gray-500"
-                                                            >
-                                                                {{
-                                                                    (
-                                                                        video.size /
-                                                                        1024 /
-                                                                        1024
-                                                                    ).toFixed(2)
-                                                                }}
-                                                                MB
                                                             </p>
                                                         </div>
                                                     </div>
@@ -948,73 +964,94 @@ const availableTabs = computed(() => {
                             </span>
                         </div>
 
-                        <ul
+                        <p class="mb-3 text-sm text-gray-500">
+                            Si necesitas reordenar tus lecciones, <br>
+                            <strong>mantén presionado y arrastra</strong>
+                            cada elemento hacia el lugar donde desees colocarlo.
+                        </p>
+
+                        <draggable
+                            v-model="localLessons"
+                            item-key="id"
                             class="flex flex-col justify-center divide-y divide-gray-100"
+                            ghost-class="opacity-50"
+                            @end="handleDragEnd"
+                            :disabled="isSidebarLocked"
+                            tag="ul"
                         >
-                            <li
-                                v-for="(l, idx) in lessons"
-                                :key="l.id"
-                                class="py-2"
-                            >
-                                <button
-                                    class="flex items-center justify-between w-full gap-3 px-2 py-2 text-left transition rounded-lg hover:bg-gray-50"
-                                    :class="
-                                        selectedLessonId === l.id
-                                            ? 'bg-indigo-50 ring-1 ring-indigo-100'
-                                            : ''
-                                    "
-                                    @click="selectedLessonId = l.id"
-                                >
-                                    <div class="flex items-center gap-3">
-                                        <div
-                                            class="inline-flex items-center justify-center w-6 h-6 mt-0.5 text-[11px] font-semibold rounded bg-indigo-100 text-indigo-700"
-                                        >
-                                            {{ idx + 1 }}
-                                        </div>
-                                        <div class="min-w-0">
-                                            <div class="w-[10rem]">
+                            <template #item="{ element: l, index: idx }">
+                                <li class="py-2">
+                                    <button
+                                        class="flex items-center justify-between w-full gap-3 px-2 py-2 text-left transition rounded-lg hover:bg-gray-50"
+                                        :class="
+                                            selectedLessonId === l.id
+                                                ? 'bg-indigo-50 ring-1 ring-indigo-100'
+                                                : ''
+                                        "
+                                        @click="selectedLessonId = l.id"
+                                    >
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="inline-flex items-center justify-center w-6 h-6 mt-0.5 text-[11px] font-semibold rounded bg-indigo-100 text-indigo-700"
+                                            >
+                                                {{ idx + 1 }}
+                                            </div>
+                                            <div class="min-w-0">
+                                                <div class="w-[10rem]">
+                                                    <p
+                                                        class="text-sm font-medium text-gray-900 truncate max-w-1/2"
+                                                        :title="l.title"
+                                                    >
+                                                        {{
+                                                            l.title ?? "Lección"
+                                                        }}
+                                                    </p>
+                                                </div>
                                                 <p
-                                                    class="text-sm font-medium text-gray-900 truncate max-w-1/2"
-                                                    :title="l.title"
+                                                    class="text-xs text-gray-500"
                                                 >
-                                                    {{ l.title ?? "Lección" }}
+                                                    <!-- Muestra meta si existe -->
+                                                    <span v-if="l.duration">{{
+                                                        l.duration
+                                                    }}</span>
+                                                    <span
+                                                        v-if="
+                                                            l.duration && l.type
+                                                        "
+                                                        class="mx-1"
+                                                        >•</span
+                                                    >
+                                                    <span v-if="l.type">{{
+                                                        l.type
+                                                    }}</span>
                                                 </p>
                                             </div>
-                                            <p class="text-xs text-gray-500">
-                                                <!-- Muestra meta si existe -->
-                                                <span v-if="l.duration">{{
-                                                    l.duration
-                                                }}</span>
-                                                <span
-                                                    v-if="l.duration && l.type"
-                                                    class="mx-1"
-                                                    >•</span
-                                                >
-                                                <span v-if="l.type">{{
-                                                    l.type
-                                                }}</span>
-                                            </p>
                                         </div>
-                                    </div>
-                                    <div class="space-x-2">
-                                        <PrimaryButton
-                                            color="lightblue"
-                                            v-tooltip="'Editar'"
-                                            @click.stop="openEditLessonModal(l)"
-                                        >
-                                            <PencilIcon class="size-4" />
-                                        </PrimaryButton>
-                                        <PrimaryButton
-                                            color="red"
-                                            @click.stop="
-                                                openDeleteLessonModal(l)
-                                            "
-                                        >
-                                            <TrashIcon class="size-4" />
-                                        </PrimaryButton>
-                                    </div>
-                                </button>
-                            </li>
+                                        <div class="space-x-2">
+                                            <PrimaryButton
+                                                color="lightblue"
+                                                v-tooltip="'Editar'"
+                                                @click.stop="
+                                                    openEditLessonModal(l)
+                                                "
+                                            >
+                                                <PencilIcon class="size-4" />
+                                            </PrimaryButton>
+                                            <PrimaryButton
+                                                color="red"
+                                                @click.stop="
+                                                    openDeleteLessonModal(l)
+                                                "
+                                            >
+                                                <TrashIcon class="size-4" />
+                                            </PrimaryButton>
+                                        </div>
+                                    </button>
+                                </li>
+                            </template>
+                        </draggable>
+
+                        <div class="flex justify-center">
                             <SecondaryButton
                                 color="lightblue"
                                 class="flex justify-center"
@@ -1023,7 +1060,7 @@ const availableTabs = computed(() => {
                                 <PlusIcon class="size-4 me-2" />
                                 Agregar lección
                             </SecondaryButton>
-                        </ul>
+                        </div>
                     </div>
                     <p
                         v-if="isSidebarLocked"

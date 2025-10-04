@@ -19,6 +19,7 @@ class Lesson extends Model implements HasMedia
         'subtitle',
         'module_id',
         'url_resource',
+        'position',
     ];
 
     protected $casts = [

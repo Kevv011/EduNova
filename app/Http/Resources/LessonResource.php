@@ -20,6 +20,7 @@ class LessonResource extends JsonResource
             'subtitle'     => $this->subtitle,
             'content'   => $this->content,
             'url_resource' => $this->url_resource,
+            'position'  => $this->position,
             'module'    => new ModuleResource($this->whenLoaded('module')),
             'media'        => $this->getMedia('lessons')->map(function ($media) {
                 return [

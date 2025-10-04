@@ -36,6 +36,7 @@
         "moment": "^2.30.1",
         "numbro": "^2.5.0",
         "swiper": "^11.2.10",
-        "toastify-js": "^1.12.0"
+        "toastify-js": "^1.12.0",
+        "vuedraggable": "^4.1.0"
     }
 }
