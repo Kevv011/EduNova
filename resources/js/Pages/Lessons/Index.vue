@@ -10,15 +10,9 @@ import TextInput from "@/Components/TextInput.vue";
 import Textarea from "@/Oak/Textarea.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
-import {
-    CheckCircleIcon,
-    XCircleIcon,
-    ExclamationCircleIcon,
-    PencilIcon,
-    PlusIcon,
-    EllipsisVerticalIcon,
-    TrashIcon,
-} from "@heroicons/vue/24/outline";
+import FileUpload from "@/Components/FileUpload.vue";
+import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/vue";
+import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/vue/24/outline";
 
 // Props
 const props = defineProps({
@@ -28,6 +22,8 @@ const props = defineProps({
 const lessonModal = ref(false);
 const editingLesson = ref(false);
 const deleteLessonModal = ref(false);
+const createContent = ref(false);
+const isSidebarLocked = computed(() => createContent.value);
 
 // Normalización de datos
 const moduleData = computed(() => props.module?.data ?? props.module ?? null);
@@ -172,6 +168,211 @@ const handlerDeleteLesson = () => {
         },
     });
 };
+
+// useForm para actualizar contenido de lessons
+const lessonForm = useForm({
+    lesson_id: null,
+    subtitle: null,
+    content: null,
+    files: [],
+    url_resource: [""],
+    remove_media_ids: [],
+});
+
+// Media existentes (para mostrarlas) y removidas (IDs reales de Spatie)
+const existingMediaForLesson = ref([]);
+const removedMediaIds = ref([]);
+
+// Limite maximo de MEDIA y URLs
+const MAX_FILES = 2;
+const MAX_URLS = 3;
+
+// Evita que el v-model tenga más de 2 archivos en MEDIA
+const enforceFileSlotLimit = () => {
+    if (lessonForm.files.length > MAX_FILES) {
+        lessonForm.files = lessonForm.files.slice(0, MAX_FILES);
+    }
+};
+
+// Array de URLs aegurado con minimo 1 dato y max 3
+const enforceUrlLimit = () => {
+    if (
+        !Array.isArray(lessonForm.url_resource) ||
+        lessonForm.url_resource.length === 0
+    ) {
+        lessonForm.url_resource = [""];
+    }
+    if (lessonForm.url_resource.length > MAX_URLS) {
+        lessonForm.url_resource = lessonForm.url_resource.slice(0, MAX_URLS);
+    }
+};
+
+// Cuando cambia la lección seleccionada, detectar cambio
+watch(
+    () => selectedLesson.value,
+    (l) => {
+        if (!l) return;
+        lessonForm.lesson_id = l.id;
+        lessonForm.remove_media_ids = [];
+        removedMediaIds.value = [];
+
+        // Actualizar contenido actual
+        if (!createContent.value) {
+            lessonForm.subtitle = l.subtitle ?? null;
+            lessonForm.content = l.content ?? null;
+
+            // Mapeo de URL resources del backend a array simple de strings
+            const urls = Array.isArray(l.url_resource) ? l.url_resource : [];
+            lessonForm.url_resource = urls.length ? [...urls] : [""];
+        }
+
+        // Actualizacion de MEDIA LIBRARY existente
+        existingMediaForLesson.value = (l.media ?? [])
+            .filter((m) => m.collection_name === "lessons")
+            .map((m) => ({
+                id: m.id,
+                url: m.url ?? m.original_url,
+                name: m.file_name,
+                size: m.size,
+                type: m.mime_type,
+            }));
+
+        removedMediaIds.value = [];
+
+        // Limitar slots disponibles según lo existente
+        enforceFileSlotLimit();
+        enforceUrlLimit();
+    },
+    { immediate: true }
+);
+
+// Añadir/Eliminar campos URL con límites
+const addUrlField = () => {
+    if (lessonForm.url_resource.length < MAX_URLS) {
+        lessonForm.url_resource.push("");
+    }
+};
+const removeUrlField = (idx) => {
+    if (lessonForm.url_resource.length > 1) {
+        lessonForm.url_resource.splice(idx, 1);
+    } else {
+        lessonForm.url_resource[0] = "";
+    }
+};
+
+const startEditingContent = () => {
+    createContent.value = true;
+    const l = selectedLesson.value;
+
+    lessonForm.lesson_id = l.id;
+    lessonForm.subtitle = l.subtitle ?? null;
+    lessonForm.content = l.content ?? null;
+
+    lessonForm.url_resource =
+        Array.isArray(l.url_resource) && l.url_resource.length
+            ? [...l.url_resource]
+            : [""];
+
+    lessonForm.files = [];
+    removedMediaIds.value = [];
+
+    enforceFileSlotLimit();
+    enforceUrlLimit();
+};
+
+const handleRemoveExistingFile = (mediaId) => {
+    if (!removedMediaIds.value.includes(mediaId)) {
+        removedMediaIds.value.push(mediaId);
+    }
+};
+
+// Cancelar edición: reset de la data actual de la lección
+const cancelEditingContent = () => {
+    createContent.value = false;
+    removedMediaIds.value = [];
+
+    const l = selectedLesson.value;
+    if (!l) return;
+    lessonForm.subtitle = l.subtitle ?? null;
+    lessonForm.content = l.content ?? null;
+    const urls = Array.isArray(l.url_resource) ? l.url_resource : [];
+    lessonForm.url_resource = urls.length ? [...urls] : [""];
+    lessonForm.files = [];
+};
+
+// Guardar contenido del LESSON editada
+const saveLessonContent = () => {
+    // Limpia URLs
+    lessonForm.url_resource = (lessonForm.url_resource ?? [])
+        .map((u) => (u ?? "").trim())
+        .filter((u, i, arr) => u !== "" && arr.indexOf(u) === i)
+        .slice(0, MAX_URLS);
+
+    // Sincroniza remove_media_ids
+    lessonForm.remove_media_ids = removedMediaIds.value;
+
+    // Envío
+    lessonForm.post(route("lessons.content.update", lessonForm.lesson_id), {
+        forceFormData: true,
+        preserveScroll: true,
+        onSuccess: () => {
+            createContent.value = false;
+            lessonForm.files = [];
+            lessonForm.remove_media_ids = [];
+            removedMediaIds.value = [];
+        },
+    });
+};
+
+// Manejo de TABS de Headless ui
+const videoResources = computed(() => {
+    return (selectedLesson.value?.media ?? []).filter((m) =>
+        m.type?.startsWith("video/")
+    );
+});
+
+const imageResources = computed(() => {
+    return (selectedLesson.value?.media ?? []).filter((m) =>
+        m.type?.startsWith("image/")
+    );
+});
+
+const documentResources = computed(() => {
+    const pdfs = (selectedLesson.value?.media ?? []).filter(
+        (m) => m.type === "application/pdf"
+    );
+    const urls = (selectedLesson.value?.url_resource ?? []).map((url, idx) => ({
+        id: `url-${idx}`,
+        url,
+        name: url,
+        type: "url",
+    }));
+    return [...pdfs, ...urls];
+});
+
+const resourceTabs = computed(() => ({
+    "Video explicativo": videoResources.value,
+    "Recursos visuales": imageResources.value,
+    "Enlaces y recursos PDF": documentResources.value,
+}));
+
+const availableTabs = computed(() => {
+    const tabs = {};
+
+    if (videoResources.value.length > 0) {
+        tabs["Video explicativo"] = videoResources.value;
+    }
+
+    if (imageResources.value.length > 0) {
+        tabs["Recursos visuales"] = imageResources.value;
+    }
+
+    if (documentResources.value.length > 0) {
+        tabs["Enlaces y recursos PDF"] = documentResources.value;
+    }
+
+    return tabs;
+});
 </script>
 
 <template>
@@ -237,14 +438,14 @@ const handlerDeleteLesson = () => {
                             <div class="flex items-center gap-2">
                                 <button
                                     class="px-3 py-2 text-sm font-medium border rounded-lg disabled:opacity-40 hover:bg-gray-50"
-                                    :disabled="!canPrev"
+                                    :disabled="!canPrev || isSidebarLocked"
                                     @click="goPrev"
                                 >
                                     Anterior
                                 </button>
                                 <button
                                     class="px-3 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg disabled:opacity-40 hover:bg-indigo-700"
-                                    :disabled="!canNext"
+                                    :disabled="!canNext || isSidebarLocked"
                                     @click="goNext"
                                 >
                                     Siguiente
@@ -294,108 +495,446 @@ const handlerDeleteLesson = () => {
 
                     <!-- Body -->
                     <div class="p-5 space-y-6">
-                        <!-- Texto/HTML -->
-                        <div
-                            v-if="
-                                resources.some(
-                                    (r) =>
-                                        r.type === 'text' || r.type === 'html'
-                                )
-                            "
-                        >
-                            <h2
-                                class="mb-2 text-sm font-semibold text-gray-700"
-                            >
-                                Contenido
-                            </h2>
-                            <div
-                                v-for="(r, i) in resources"
-                                :key="'txt-' + i"
-                                v-if="r.type === 'text' || r.type === 'html'"
-                                class="prose-sm prose max-w-none prose-p:leading-relaxed"
-                                v-html="safeHtml(r.html ?? r.text)"
-                            />
-                        </div>
+                        <!-- <pre>{{ selectedLesson }}</pre> -->
 
-                        <!-- PDFs -->
-                        <div
-                            v-if="resources.some((r) => r.type === 'pdf')"
-                            class="space-y-3"
-                        >
-                            <h2 class="text-sm font-semibold text-gray-700">
-                                Recursos PDF
-                            </h2>
-                            <div
-                                v-for="(r, i) in resources"
-                                :key="'pdf-' + i"
-                                v-if="r.type === 'pdf' && r.url"
-                                class="overflow-hidden border rounded-lg"
-                            >
-                                <!-- Vista previa -->
-                                <div class="aspect-[4/3] bg-gray-50">
-                                    <embed
-                                        :src="r.url"
-                                        type="application/pdf"
-                                        class="w-full h-full"
-                                    />
-                                </div>
-                                <div
-                                    class="flex items-center justify-between px-3 py-2 text-sm bg-gray-50"
+                        <!-- Si la lección NO tiene contenido -->
+                        <div v-if="!selectedLesson.content && !createContent">
+                            <div class="flex flex-col items-center">
+                                <img
+                                    src="/images/emptyContent.png"
+                                    alt="empty"
+                                    width="600"
+                                />
+                                <PrimaryButton
+                                    class="flex justify-center gap-1"
+                                    @click="startEditingContent"
                                 >
-                                    <span class="truncate">{{
-                                        r.title ?? "Documento PDF"
-                                    }}</span>
-                                    <a
-                                        :href="r.url"
-                                        target="_blank"
-                                        class="font-medium text-indigo-600 hover:text-indigo-700"
-                                        >Abrir</a
-                                    >
-                                </div>
+                                    Crear contenido
+                                </PrimaryButton>
                             </div>
                         </div>
 
-                        <!-- Otros archivos -->
+                        <!-- Si la lección SÍ tiene contenido y no se creando -->
                         <div
-                            v-if="resources.some((r) => r.type === 'file')"
-                            class="space-y-2"
+                            v-else-if="selectedLesson.content && !createContent"
                         >
-                            <h2 class="text-sm font-semibold text-gray-700">
-                                Archivos adjuntos
-                            </h2>
-                            <ul class="space-y-1">
-                                <li
-                                    v-for="(r, i) in resources"
-                                    :key="'file-' + i"
-                                    v-if="r.type === 'file' && r.url"
-                                    class="flex items-center justify-between px-3 py-2 text-sm border rounded-lg"
-                                >
-                                    <span class="truncate">{{
-                                        r.title ?? r.url
-                                    }}</span>
-                                    <a
-                                        :href="r.url"
-                                        target="_blank"
-                                        class="font-medium text-indigo-600 hover:text-indigo-700"
-                                        >Descargar</a
-                                    >
-                                </li>
-                            </ul>
+                            <div
+                                v-if="selectedLesson?.subtitle"
+                                class="prose whitespace-pre-line max-w-none"
+                            >
+                                <p class="mb-3 text-xl font-medium">
+                                    {{ selectedLesson?.subtitle }}
+                                </p>
+                            </div>
+                            <div
+                                class="mb-5 prose whitespace-pre-line max-w-none"
+                            >
+                                {{ selectedLesson.content }}
+                            </div>
+
+                            <!-- TABS de navegacion -->
+                            <div
+                                v-if="Object.keys(availableTabs).length > 0"
+                                class="flex justify-center mt-6"
+                            >
+                                <div class="w-full px-2 sm:px-0">
+                                    <TabGroup>
+                                        <TabList
+                                            class="flex p-1 space-x-1 rounded-xl bg-indigo-900/20"
+                                        >
+                                            <Tab
+                                                v-for="category in Object.keys(
+                                                    availableTabs
+                                                )"
+                                                :key="category"
+                                                v-slot="{ selected }"
+                                                as="template"
+                                            >
+                                                <button
+                                                    :class="[
+                                                        'w-full rounded-lg py-2.5 text-sm font-medium leading-5',
+                                                        'ring-white/60 ring-offset-2 ring-offset-indigo-400 focus:outline-none focus:ring-2',
+                                                        selected
+                                                            ? 'bg-white text-indigo-700 shadow'
+                                                            : 'text-indigo-800 hover:bg-white/[0.12] hover:text-white',
+                                                    ]"
+                                                >
+                                                    {{ category }}
+                                                    <span
+                                                        class="ml-2 text-xs opacity-75"
+                                                    >
+                                                        ({{
+                                                            availableTabs[
+                                                                category
+                                                            ].length
+                                                        }})
+                                                    </span>
+                                                </button>
+                                            </Tab>
+                                        </TabList>
+
+                                        <TabPanels class="mt-4">
+                                            <!-- Panel: Video explicativo (solo si existe) -->
+                                            <TabPanel
+                                                v-if="
+                                                    availableTabs[
+                                                        'Video explicativo'
+                                                    ]
+                                                "
+                                                :class="[
+                                                    'rounded-xl bg-white p-4',
+                                                    'ring-white/60 ring-offset-2 ring-offset-indigo-400 focus:outline-none focus:ring-2',
+                                                ]"
+                                            >
+                                                <div class="space-y-4">
+                                                    <div
+                                                        v-for="video in videoResources"
+                                                        :key="video.id"
+                                                        class="overflow-hidden border rounded-lg"
+                                                    >
+                                                        <video
+                                                            controls
+                                                            :src="video.url"
+                                                            class="w-full rounded-lg"
+                                                        ></video>
+                                                        <div
+                                                            class="p-3 bg-gray-50"
+                                                        >
+                                                            <p
+                                                                class="text-sm font-medium text-gray-900"
+                                                            >
+                                                                {{ video.name }}
+                                                            </p>
+                                                            <p
+                                                                class="text-xs text-gray-500"
+                                                            >
+                                                                {{
+                                                                    (
+                                                                        video.size /
+                                                                        1024 /
+                                                                        1024
+                                                                    ).toFixed(2)
+                                                                }}
+                                                                MB
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </TabPanel>
+
+                                            <!-- Panel: Recursos visuales (solo si existe) -->
+                                            <TabPanel
+                                                v-if="
+                                                    availableTabs[
+                                                        'Recursos visuales'
+                                                    ]
+                                                "
+                                                :class="[
+                                                    'rounded-xl bg-white p-4',
+                                                    'ring-white/60 ring-offset-2 ring-offset-indigo-400 focus:outline-none focus:ring-2',
+                                                ]"
+                                            >
+                                                <div
+                                                    class="grid grid-cols-2 gap-4 md:grid-cols-3"
+                                                >
+                                                    <div
+                                                        v-for="image in imageResources"
+                                                        :key="image.id"
+                                                        class="overflow-hidden border rounded-lg"
+                                                    >
+                                                        <img
+                                                            :src="image.url"
+                                                            :alt="image.name"
+                                                            class="object-cover w-full h-48"
+                                                        />
+                                                        <div
+                                                            class="p-2 bg-gray-50"
+                                                        >
+                                                            <p
+                                                                class="text-xs font-medium text-gray-900 truncate"
+                                                            >
+                                                                {{ image.name }}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </TabPanel>
+
+                                            <!-- Panel: Enlaces y recursos PDF (solo si existe) -->
+                                            <TabPanel
+                                                v-if="
+                                                    availableTabs[
+                                                        'Enlaces y recursos PDF'
+                                                    ]
+                                                "
+                                                :class="[
+                                                    'rounded-xl bg-white p-4',
+                                                    'ring-white/60 ring-offset-2 ring-offset-indigo-400 focus:outline-none focus:ring-2',
+                                                ]"
+                                            >
+                                                <ul class="space-y-2">
+                                                    <li
+                                                        v-for="doc in documentResources"
+                                                        :key="doc.id"
+                                                        class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
+                                                    >
+                                                        <div
+                                                            class="flex items-center min-w-0 gap-3"
+                                                        >
+                                                            <svg
+                                                                v-if="
+                                                                    doc.type ===
+                                                                    'application/pdf'
+                                                                "
+                                                                class="w-6 h-6 text-red-600 shrink-0"
+                                                                fill="currentColor"
+                                                                viewBox="0 0 20 20"
+                                                            >
+                                                                <path
+                                                                    d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                                                                />
+                                                            </svg>
+                                                            <svg
+                                                                v-else
+                                                                class="w-6 h-6 text-blue-600 shrink-0"
+                                                                fill="currentColor"
+                                                                viewBox="0 0 20 20"
+                                                            >
+                                                                <path
+                                                                    d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                                                                />
+                                                            </svg>
+                                                            <div
+                                                                class="min-w-0"
+                                                            >
+                                                                <p
+                                                                    class="text-sm font-medium text-gray-900 truncate"
+                                                                >
+                                                                    {{
+                                                                        doc.name
+                                                                    }}
+                                                                </p>
+                                                                <p
+                                                                    v-if="
+                                                                        doc.size
+                                                                    "
+                                                                    class="text-xs text-gray-500"
+                                                                >
+                                                                    {{
+                                                                        (
+                                                                            doc.size /
+                                                                            1024 /
+                                                                            1024
+                                                                        ).toFixed(
+                                                                            2
+                                                                        )
+                                                                    }}
+                                                                    MB
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <a
+                                                            :href="doc.url"
+                                                            target="_blank"
+                                                            class="px-3 py-1 text-sm font-medium text-indigo-600 border border-indigo-600 rounded-lg shrink-0 hover:bg-indigo-50"
+                                                        >
+                                                            Abrir
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </TabPanel>
+                                        </TabPanels>
+                                    </TabGroup>
+                                </div>
+                            </div>
+
+                            <!-- Mensaje si no hay recursos en absoluto -->
+                            <div v-else class="py-8 text-center text-gray-500">
+                                No hay recursos disponibles para esta lección.
+                                Puedes agregarlos editando el contenido.
+                            </div>
+
+                            <PrimaryButton
+                                class="mt-4"
+                                @click="startEditingContent"
+                            >
+                                Editar contenido
+                            </PrimaryButton>
+                        </div>
+
+                        <!-- Contenido de leccion -->
+                        <!-- Modo edición / creación de contenido -->
+                        <div v-else>
+                            <FormSection2 @submitted="saveLessonContent">
+                                <template #form>
+                                    <div class="space-y-6">
+                                        <!-- Subtítulo -->
+                                        <div>
+                                            <InputLabel value="Subtítulo" />
+                                            <TextInput
+                                                v-model="lessonForm.subtitle"
+                                                class="block w-full mt-1"
+                                            />
+                                            <InputError
+                                                :message="
+                                                    lessonForm.errors.subtitle
+                                                "
+                                                class="mt-2"
+                                            />
+                                        </div>
+
+                                        <!-- Contenido -->
+                                        <div>
+                                            <InputLabel value="Contenido" />
+                                            <Textarea
+                                                v-model="lessonForm.content"
+                                                class="block w-full mt-1"
+                                                rows="8"
+                                                placeholder="Detalla información sobre el contenido de esta lección"
+                                            />
+                                            <InputError
+                                                :message="
+                                                    lessonForm.errors.content
+                                                "
+                                                class="mt-2"
+                                            />
+                                        </div>
+
+                                        <!-- Recursos de archivos (Media Library) -->
+                                        <div>
+                                            <InputLabel
+                                                value="Recursos de la lección (máx 2 archivos)"
+                                            />
+                                            <FileUpload
+                                                :key="selectedLessonId"
+                                                v-model="lessonForm.files"
+                                                :existing-files="
+                                                    selectedLesson?.media ?? []
+                                                "
+                                                :max-files="2"
+                                                :max-size="1024 * 5"
+                                                accept="image/*,application/pdf,video/*"
+                                                label="Archivos de la lección"
+                                                description="Sube hasta 2 archivos: imágenes, PDFs o videos cortos."
+                                                @remove-existing="
+                                                    handleRemoveExistingFile
+                                                "
+                                            />
+                                            <InputError
+                                                :message="
+                                                    lessonForm.errors.files
+                                                "
+                                                class="mt-2"
+                                            />
+                                        </div>
+
+                                        <!-- Recursos URL (máx 3) -->
+                                        <div>
+                                            <InputLabel
+                                                value="Recursos por URL (máx 3) (Opcional)"
+                                            />
+                                            <div class="space-y-2">
+                                                <div
+                                                    v-for="(
+                                                        u, idx
+                                                    ) in lessonForm.url_resource"
+                                                    :key="'url-' + idx"
+                                                    class="flex gap-2"
+                                                >
+                                                    <TextInput
+                                                        v-model="
+                                                            lessonForm
+                                                                .url_resource[
+                                                                idx
+                                                            ]
+                                                        "
+                                                        class="flex-1"
+                                                        placeholder="https://..."
+                                                    />
+                                                    <SecondaryButton
+                                                        class="shrink-0"
+                                                        @click.prevent="
+                                                            removeUrlField(idx)
+                                                        "
+                                                        v-tooltip="
+                                                            'Eliminar URL'
+                                                        "
+                                                    >
+                                                        Quitar
+                                                    </SecondaryButton>
+                                                </div>
+                                                <div
+                                                    class="flex items-center justify-between"
+                                                >
+                                                    <span
+                                                        class="text-xs text-gray-500"
+                                                    >
+                                                        Puedes agregar hasta 3
+                                                        URLs (YouTube, Vimeo,
+                                                        PDFs públicos, etc.)
+                                                    </span>
+                                                    <SecondaryButton
+                                                        :disabled="
+                                                            lessonForm
+                                                                .url_resource
+                                                                .length >= 3
+                                                        "
+                                                        @click.prevent="
+                                                            addUrlField
+                                                        "
+                                                    >
+                                                        + URL
+                                                    </SecondaryButton>
+                                                </div>
+                                            </div>
+                                            <InputError
+                                                :message="
+                                                    lessonForm.errors
+                                                        .url_resource
+                                                "
+                                                class="mt-2"
+                                            />
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <template #actions>
+                                    <div class="flex items-center gap-3">
+                                        <SecondaryButton
+                                            type="button"
+                                            @click="cancelEditingContent"
+                                            >Cancelar</SecondaryButton
+                                        >
+                                        <PrimaryButton
+                                            type="submit"
+                                            :class="{
+                                                'opacity-25':
+                                                    lessonForm.processing,
+                                            }"
+                                            :disabled="lessonForm.processing"
+                                        >
+                                            Guardar contenido
+                                        </PrimaryButton>
+                                    </div>
+                                </template>
+                            </FormSection2>
                         </div>
                     </div>
                 </div>
-
-                <!-- Loading/placeholder si no hay seleccion aún pero hay lecciones -->
-                <div v-else class="p-8 bg-white border rounded-2xl">
-                    <div class="w-24 h-4 mb-3 bg-gray-200 rounded"></div>
-                    <div class="w-full h-48 bg-gray-100 rounded"></div>
-                </div>
             </section>
 
-            <!-- Aside: índice de lecciones (derecha) -->
+            <!-- Aside: índice de lecciones -->
             <aside class="md:col-span-4 lg:col-span-3">
                 <div class="sticky top-4">
-                    <div class="p-4 bg-white border rounded-2xl">
+                    <div
+                        class="p-4 bg-white border rounded-2xl"
+                        :class="
+                            isSidebarLocked
+                                ? 'pointer-events-none opacity-60 select-none'
+                                : ''
+                        "
+                        :aria-disabled="isSidebarLocked"
+                    >
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="text-sm font-semibold text-gray-800">
                                 Contenido del curso
@@ -461,7 +1000,6 @@ const handlerDeleteLesson = () => {
                                         <PrimaryButton
                                             color="lightblue"
                                             v-tooltip="'Editar'"
-                                            @click="openEditLessonModal(l)"
                                             @click.stop="openEditLessonModal(l)"
                                         >
                                             <PencilIcon class="size-4" />
@@ -487,14 +1025,20 @@ const handlerDeleteLesson = () => {
                             </SecondaryButton>
                         </ul>
                     </div>
+                    <p
+                        v-if="isSidebarLocked"
+                        class="mt-2 text-center text-red-700 text-md"
+                    >
+                        Estás editando contenido. Usa “Guardar contenido” o
+                        “Cancelar” para volver a navegar.
+                    </p>
                 </div>
             </aside>
         </div>
 
-        <!-- DEBUG opcional -->
-        <pre class="mt-6 text-xs">{{
+        <!-- <pre class="mt-6 text-xs">{{
             JSON.stringify(moduleData, null, 2)
-        }}</pre>
+        }}</pre> -->
 
         <!-- Modal para agregar un modulo -->
         <DialogModal

@@ -49,4 +49,5 @@ Route::middleware([
 
     // Ruta para Lessons
     Route::resource('lessons', LessonController::class);
+    Route::post('/lessons/content/{lesson}', [LessonController::class, 'updateContent'])->name('lessons.content.update');
 });

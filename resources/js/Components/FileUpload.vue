@@ -1,6 +1,6 @@
 <!-- resources/js/Components/FileUpload.vue -->
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import {
     PlusIcon,
     XMarkIcon,
@@ -15,7 +15,7 @@ const props = defineProps({
     },
     accept: {
         type: String,
-        default: "image/*,.pdf",
+        default: "image/*",
     },
     multiple: {
         type: Boolean,
@@ -27,7 +27,7 @@ const props = defineProps({
     },
     maxSize: {
         type: Number,
-        default: 2048, // KB
+        default: 2048,
     },
     label: {
         type: String,
@@ -35,11 +35,15 @@ const props = defineProps({
     },
     description: {
         type: String,
-        default: "Imágenes (JPG, PNG) y PDFs hasta 2MB cada uno",
+        default: "Imágenes (JPG, PNG) hasta 2MB cada uno",
+    },
+    existingFiles: {
+        type: Array,
+        default: () => [],
     },
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "remove-existing"]);
 
 const fileInput = ref(null);
 const files = ref([]);
@@ -92,6 +96,7 @@ const addFiles = (newFiles) => {
             const reader = new FileReader();
             reader.onload = (e) => {
                 fileData.preview = e.target.result;
+                files.value = [...files.value];
             };
             reader.readAsDataURL(file);
         }
@@ -99,17 +104,28 @@ const addFiles = (newFiles) => {
         files.value.push(fileData);
     });
 
+    // Emitir solo si hay nuevos archivos
     emit(
         "update:modelValue",
-        files.value.map((f) => f.file)
+        files.value.filter((f) => !f.isExisting).map((f) => f.file)
     );
 };
 
 const removeFile = (index) => {
+    const removed = files.value[index];
     files.value.splice(index, 1);
+
+    // Emitir el evento para imágenes existentes
+    if (
+        removed.isExisting &&
+        removed.id &&
+        !String(removed.id).startsWith("existing-")
+    ) {
+        emit("remove-existing", removed.id);
+    }
     emit(
         "update:modelValue",
-        files.value.map((f) => f.file)
+        files.value.filter((f) => !f.isExisting).map((f) => f.file)
     );
 };
 
@@ -135,6 +151,20 @@ const onDragLeave = (event) => {
     event.preventDefault();
     isDragging.value = false;
 };
+
+onMounted(() => {
+    props.existingFiles.forEach((f, idx) => {
+        files.value.push({
+            id: f.id,
+            file: null,
+            name: f.name ?? f.url?.split("/").pop() ?? "archivo",
+            size: f.size ?? 0,
+            type: f.type ?? "",
+            preview: f.url,
+            isExisting: true,
+        });
+    });
+});
 </script>
 
 <template>
@@ -157,16 +187,16 @@ const onDragLeave = (event) => {
             @dragover="onDragOver"
             @dragleave="onDragLeave"
             :class="[
-                'relative border-2 border-dashed rounded-lg p-6 cursor-pointer transition-colors',
+                'relative border-2 border-dashed rounded-lg px-6 py-4 cursor-pointer transition-colors',
                 isDragging
                     ? 'border-blue-400 bg-blue-50'
-                    : 'border-gray-300 hover:border-blue-400 hover:bg-blue-900',
+                    : 'border-gray-300 hover:border-gray-400 hover:bg-gray-200',
             ]"
         >
             <div class="text-center">
-                <PlusIcon class="w-12 h-12 mx-auto text-gray-400" />
+                <PlusIcon class="w-8 h-8 mx-auto text-gray-400" />
                 <div class="mt-2">
-                    <p class="text-sm font-medium text-white">{{ label }}</p>
+                    <p class="text-sm font-medium text-gray-600">{{ label }}</p>
                     <p class="mt-1 text-xs text-gray-400">{{ description }}</p>
                     <p class="mt-1 text-xs text-gray-400">
                         {{ files.length }}/{{ maxFiles }} archivos
