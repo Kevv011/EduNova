@@ -55,10 +55,10 @@ const sidebarNavigation = computed(() => [
         visible: !props.disabledOptions,
     },
     {
-        name: "Materias",
-        href: "#",
+        name: "Materias impartidas",
+        href: route('categories.index'),
         icon: InboxStackIcon,
-        current: route().current("subjects.*"),
+        current: route().current("categories.*"),
         visible: !props.disabledOptions,
     },
     {

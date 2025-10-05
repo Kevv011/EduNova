@@ -9,6 +9,7 @@ use App\Http\Controllers\InstructorRequestController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\CategoryController;
 
 Route::get('/', [LandingController::class, 'index'])->name('home');
 
@@ -20,9 +21,9 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+
+    // Ruta del Dashboard
+    Route::get('/dashboard', [LandingController::class, 'dashboard'])->name('dashboard');
 
     // Rutas para registro de estudiante
     Route::prefix('registration')->name('registration.')->group(function () {
@@ -51,4 +52,7 @@ Route::middleware([
     Route::resource('lessons', LessonController::class);
     Route::post('/lessons/content/{lesson}', [LessonController::class, 'updateContent'])->name('lessons.content.update');
     Route::post('/lessons/reorder', [LessonController::class, 'reorder'])->name('lessons.reorder');
+
+    // Ruta de categories (Instructores)
+    Route::resource('categories', CategoryController::class);
 });

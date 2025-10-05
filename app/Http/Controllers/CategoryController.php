@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use App\Models\Course;
 
 class CategoryController extends Controller
 {
@@ -12,7 +14,18 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        $instructorId = auth()->user()?->instructor?->id;
+
+        if ($instructorId) {
+            $courses = Course::where('instructor_id', $instructorId)->get();    // Obtener cursos del instructor
+            $categoryIds = $courses->pluck('category_id')->unique()->values();  // Obtener categorias de esos cursos
+            $categories = Category::whereIn('id', $categoryIds)->get();         // En base a categorias de cursos del intructor, obtenerlas
+        }
+
+        return Inertia::render('Categories/Index', [
+            'courses' => $courses,
+            'categories' => $categories,
+        ]);
     }
 
     /**

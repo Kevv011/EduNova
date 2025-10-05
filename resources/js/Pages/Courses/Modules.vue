@@ -21,6 +21,7 @@ import {
     PencilIcon,
     PlusIcon,
     EllipsisVerticalIcon,
+    BookOpenIcon
 } from "@heroicons/vue/24/outline";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 
@@ -504,12 +505,12 @@ const handlerDeleteModule = () => {
                                                     class="px-4 py-2 border border-gray-500 rounded-lg"
                                                     color="lightblue"
                                                     v-tooltip="
-                                                        'Agregar lecciones'
+                                                        'Lecciones'
                                                     "
 
                                                 >
-                                                    <PlusIcon
-                                                        class="w-4 h-4 mr-1"
+                                                    <BookOpenIcon
+                                                        class="mr-1 size-5"
                                                     />
                                                 </Link>
                                                 <PrimaryButton
