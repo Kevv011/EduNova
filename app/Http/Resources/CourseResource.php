@@ -25,6 +25,7 @@ class CourseResource extends JsonResource
             'category'     => new CategoryResource($this->whenLoaded('category')),
             'instructor'   => new InstructorResource($this->whenLoaded('instructor')),
             'image' => $this->getFirstMediaUrl('course_images') ?: null,
+            'modules' => ModuleResource::collection($this->whenLoaded('modules')),
             'students'     => $this->whenLoaded('students', function () {
                 return $this->students->map(function ($student) {
                     return [

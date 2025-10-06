@@ -76,22 +76,21 @@ const recentStudentsCount = computed(() => {
 
 <template>
     <div class="relative overflow-hidden bg-white">
-        <div aria-hidden="true" class="absolute inset-0">
-            <div class="absolute inset-0 mx-auto overflow-hidden">
-                <img
-                    src="/images/dashboard.png"
-                    alt=""
-                    class="object-cover size-full rounded-xl"
-                />
-            </div>
-            <div class="absolute inset-0 bg-white/80" />
-            <div
-                class="absolute inset-0 bg-gradient-to-t from-white via-white"
-            />
-        </div>
 
-        <section aria-labelledby="sale-heading" class="relative pt-10 pb-10">
-            <div class="mx-16 mb-10">
+        <section class="relative pt-10 mb-10 overflow-hidden">
+            <div aria-hidden="true" class="absolute inset-0">
+                <div class="absolute inset-0 mx-auto overflow-hidden">
+                    <img
+                        src="/images/dashboard.png"
+                        alt=""
+                        class="object-cover size-full rounded-xl"
+                    />
+                </div>
+                <div class="absolute inset-0 bg-white/85" />
+                <div class="absolute" />
+            </div>
+
+            <div class="relative mx-16 mb-10">
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
                     <!-- Perfil del instructor -->
                     <div
@@ -130,7 +129,7 @@ const recentStudentsCount = computed(() => {
 
                     <!-- Cursos creados -->
                     <div
-                        class="p-6 transition-shadow border border-indigo-200 shadow-sm bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl hover:shadow-md"
+                        class="p-6 transition-shadow border border-indigo-200 shadow-sm bg-gradient-to-br from-gray-100 to-white rounded-xl hover:shadow-md"
                     >
                         <div class="flex items-center justify-between">
                             <div>
@@ -156,7 +155,7 @@ const recentStudentsCount = computed(() => {
 
                     <!-- Estudiantes inscritos última semana -->
                     <div
-                        class="p-6 transition-shadow border border-green-200 shadow-sm bg-gradient-to-br from-green-50 to-green-100 rounded-xl hover:shadow-md"
+                        class="p-6 transition-shadow border border-green-200 shadow-sm bg-gradient-to-br from-gray-100 to-white rounded-xl hover:shadow-md"
                     >
                         <div class="flex items-center justify-between">
                             <div>
@@ -189,141 +188,135 @@ const recentStudentsCount = computed(() => {
                     </div>
                 </div>
             </div>
+        </section>
 
-            <div class="mx-16">
-                <!-- Header -->
-                <div class="mb-8">
-                    <h2 class="text-2xl font-bold text-gray-900">
-                        Cursos creados recientemente
-                    </h2>
-                    <p class="mt-1 text-gray-600">
-                        Consulta y gestiona tus cursos recientes, revisa el
-                        progreso de tus alumnos y sigue impulsando la educación
-                        con EduNova.
-                    </p>
-                </div>
+        <div class="mx-16">
+            <!-- Header -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-gray-900">
+                    Cursos creados recientemente
+                </h2>
+                <p class="mt-1 text-gray-600">
+                    Consulta y gestiona tus cursos recientes, revisa el progreso
+                    de tus alumnos y sigue impulsando la educación con EduNova.
+                </p>
+            </div>
 
-                <!-- Sin cursos -->
-                <div v-if="courses.length === 0" class="py-12 text-center">
-                    <BookOpenIcon
-                        class="w-16 h-16 mx-auto mb-4 text-gray-400"
-                    />
-                    <p class="text-lg text-gray-500">
-                        Aún no has creado ningún curso.
-                    </p>
-                    <Link
-                        :href="route('courses.index')"
-                        class="inline-flex items-center gap-2 px-4 py-2 mt-4 text-white transition bg-indigo-600 rounded-lg hover:bg-indigo-700"
-                    >
-                        Crear mi primer curso
-                    </Link>
-                </div>
+            <!-- Sin cursos -->
+            <div v-if="courses.length === 0" class="py-12 text-center">
+                <BookOpenIcon class="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                <p class="text-lg text-gray-500">
+                    Aún no has creado ningún curso.
+                </p>
+                <Link
+                    :href="route('courses.index')"
+                    class="inline-flex items-center gap-2 px-4 py-2 mt-4 text-white transition bg-indigo-600 rounded-lg hover:bg-indigo-700"
+                >
+                    Crear mi primer curso
+                </Link>
+            </div>
 
-                <!-- Grid de cursos recientes -->
-                <div v-else>
+            <!-- Grid de cursos recientes -->
+            <div v-else>
+                <div
+                    class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+                >
                     <div
-                        class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+                        v-for="course in recentCourses"
+                        :key="course.id"
+                        class="relative overflow-hidden transition-all bg-white border border-gray-200 shadow-sm group rounded-xl hover:shadow-lg"
                     >
-                        <div
-                            v-for="course in recentCourses"
-                            :key="course.id"
-                            class="relative overflow-hidden transition-all bg-white border border-gray-200 shadow-sm group rounded-xl hover:shadow-lg"
-                        >
-                            <!-- Badge de estado -->
-                            <div class="absolute z-10 top-3 right-3">
+                        <!-- Badge de estado -->
+                        <div class="absolute z-10 top-3 right-3">
+                            <span
+                                :class="[
+                                    'px-3 py-1 text-xs font-semibold rounded-full',
+                                    getAuthBadge(course.authorized).class,
+                                ]"
+                            >
+                                {{ getAuthBadge(course.authorized).text }}
+                            </span>
+                        </div>
+
+                        <!-- Contenido de la card -->
+                        <div class="p-6">
+                            <!-- Icono del curso -->
+                            <div
+                                class="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-indigo-50"
+                            >
+                                <BookOpenIcon class="w-6 h-6 text-indigo-600" />
+                            </div>
+
+                            <!-- Nombre del curso -->
+                            <h3
+                                class="mb-2 text-lg font-semibold text-gray-900 line-clamp-2"
+                            >
+                                {{ course.name }}
+                            </h3>
+
+                            <!-- Descripción -->
+                            <p class="mb-4 text-sm text-gray-600 line-clamp-3">
+                                {{ course.description }}
+                            </p>
+
+                            <!-- Areas del curso -->
+                            <div
+                                v-if="course.areas && course.areas.length"
+                                class="flex flex-wrap gap-2 mb-4"
+                            >
                                 <span
-                                    :class="[
-                                        'px-3 py-1 text-xs font-semibold rounded-full',
-                                        getAuthBadge(course.authorized).class,
-                                    ]"
+                                    v-for="(area, idx) in course.areas.slice(
+                                        0,
+                                        3
+                                    )"
+                                    :key="idx"
+                                    class="px-2 py-1 text-xs font-medium text-indigo-700 bg-indigo-100 rounded"
                                 >
-                                    {{ getAuthBadge(course.authorized).text }}
+                                    {{ area }}
+                                </span>
+                                <span
+                                    v-if="course.areas.length > 3"
+                                    class="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded"
+                                >
+                                    +{{ course.areas.length - 3 }}
                                 </span>
                             </div>
 
-                            <!-- Contenido de la card -->
-                            <div class="p-6">
-                                <!-- Icono del curso -->
-                                <div
-                                    class="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-indigo-50"
-                                >
-                                    <BookOpenIcon
-                                        class="w-6 h-6 text-indigo-600"
-                                    />
-                                </div>
+                            <!-- Fecha de creación -->
+                            <p class="mb-4 text-xs text-gray-500">
+                                Creado el
+                                {{ formatDate(course.created_at) }}
+                            </p>
 
-                                <!-- Nombre del curso -->
-                                <h3
-                                    class="mb-2 text-lg font-semibold text-gray-900 line-clamp-2"
-                                >
-                                    {{ course.name }}
-                                </h3>
-
-                                <!-- Descripción -->
-                                <p
-                                    class="mb-4 text-sm text-gray-600 line-clamp-3"
-                                >
-                                    {{ course.description }}
-                                </p>
-
-                                <!-- Areas del curso -->
-                                <div
-                                    v-if="course.areas && course.areas.length"
-                                    class="flex flex-wrap gap-2 mb-4"
-                                >
-                                    <span
-                                        v-for="(
-                                            area, idx
-                                        ) in course.areas.slice(0, 3)"
-                                        :key="idx"
-                                        class="px-2 py-1 text-xs font-medium text-indigo-700 bg-indigo-100 rounded"
-                                    >
-                                        {{ area }}
-                                    </span>
-                                    <span
-                                        v-if="course.areas.length > 3"
-                                        class="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded"
-                                    >
-                                        +{{ course.areas.length - 3 }}
-                                    </span>
-                                </div>
-
-                                <!-- Fecha de creación -->
-                                <p class="mb-4 text-xs text-gray-500">
-                                    Creado el
-                                    {{ formatDate(course.created_at) }}
-                                </p>
-
-                                <!-- Botón ver detalles -->
-                                <Link
-                                    :href="route('courses.modules', course.id)"
-                                    class="inline-flex items-center gap-2 text-sm font-medium text-indigo-600 transition hover:text-indigo-700"
-                                >
-                                    Ver curso
-                                    <ArrowRightIcon
-                                        class="w-4 h-4 transition-transform group-hover:translate-x-1"
-                                    />
-                                </Link>
-                            </div>
-
-                            <div
-                                class="h-1 bg-gradient-to-r from-indigo-500 to-purple-500"
-                            />
+                            <!-- Botón ver detalles -->
+                            <Link
+                                :href="route('courses.modules', course.id)"
+                                class="inline-flex items-center gap-2 text-sm font-medium text-indigo-600 transition hover:text-indigo-700"
+                            >
+                                Ver curso
+                                <ArrowRightIcon
+                                    class="w-4 h-4 transition-transform group-hover:translate-x-1"
+                                />
+                            </Link>
                         </div>
-                    </div>
 
-                    <!-- Botón "Ver más cursos" -->
-                    <div v-if="hasMoreCourses" class="mt-8 text-center">
-                        <Link
-                            :href="route('courses.index')"
-                            class="inline-flex items-center gap-2 px-6 py-3 font-medium text-white transition bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 hover:shadow-lg"
-                        >
-                            Ver más cursos
-                            <ArrowRightIcon class="w-5 h-5" />
-                        </Link>
+                        <div
+                            class="h-1 bg-gradient-to-r from-indigo-500 to-purple-500"
+                        />
                     </div>
                 </div>
+
+                <!-- Botón "Ver más cursos" -->
+                <div v-if="hasMoreCourses" class="mt-8 text-center">
+                    <Link
+                        :href="route('courses.index')"
+                        class="inline-flex items-center gap-2 px-6 py-3 font-medium text-white transition bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 hover:shadow-lg"
+                    >
+                        Ver más cursos
+                        <ArrowRightIcon class="w-5 h-5" />
+                    </Link>
+                </div>
             </div>
-        </section>
+        </div>
     </div>
 </template>

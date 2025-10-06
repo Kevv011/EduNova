@@ -40,6 +40,14 @@ Route::middleware([
         Route::get('/modules', [CourseController::class, 'modules'])->name('modules');
     });
 
+    Route::get('/courses/students/library', [CourseController::class, 'studentMyCourses'])->name('students.courses');
+    Route::prefix('courses/students')->name('courses.students.')->group(function () {
+        Route::get('/all', [CourseController::class, 'studentIndex'])->name('index');
+        Route::get('/{course}', [CourseController::class, 'studentCourse'])->name('courses');
+        Route::get('/{course}/modules', [CourseController::class, 'studentModules'])->name('modules');
+        Route::post('/inscription', [CourseController::class, 'studentInscription'])->name('inscription');
+    });
+
     // Ruta para modulos
     Route::resource('modules', ModuleController::class);
     Route::prefix('/modules/{module}')->name('modules.')->group(function () {

@@ -14,6 +14,7 @@ import FileUpload from "@/Components/FileUpload.vue";
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/vue";
 import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import draggable from "vuedraggable";
+import { useHasPermission } from "@/composables/useHasPermission";
 
 // Props
 const props = defineProps({
@@ -75,12 +76,8 @@ const goNext = () => {
 
 // Parse de recursos (ajusta a tu backend)
 const resources = computed(() => {
-    // Soporta varios formatos: selectedLesson.resources, resource_url, content_html, etc.
     const l = selectedLesson.value;
     if (!l) return [];
-    // Ejemplos de shape esperado:
-    // l.resources = [{ type: 'video'|'pdf'|'text', url, html, title }]
-    // Si no tienes esta estructura aún, puedes mapearla acá.
     return Array.isArray(l.resources) ? l.resources : [];
 });
 
@@ -412,7 +409,6 @@ const handleDragEnd = () => {
                   }`
                 : 'Módulo'
         "
-        subtitle="Explora las lecciones y sus recursos. A la derecha tienes el índice, a la izquierda el contenido."
         :pages="[
             {
                 name: 'Mis cursos',
@@ -421,9 +417,9 @@ const handleDragEnd = () => {
             },
             {
                 name: moduleData?.course?.name ?? 'Curso',
-                href: moduleData?.course?.id
+                href: useHasPermission('crear_contenido')
                     ? route('courses.modules', moduleData.course.id)
-                    : '#',
+                    : route('courses.students.modules', moduleData.course.id),
                 current: false,
             },
             { name: 'Lecciones', href: '#', current: true },
@@ -536,6 +532,7 @@ const handleDragEnd = () => {
                                 <PrimaryButton
                                     class="flex justify-center gap-1"
                                     @click="startEditingContent"
+                                    v-if="useHasPermission('crear_contenido')"
                                 >
                                     Crear contenido
                                 </PrimaryButton>
@@ -964,13 +961,17 @@ const handleDragEnd = () => {
                             </span>
                         </div>
 
-                        <p class="mb-3 text-sm text-gray-500">
-                            Si necesitas reordenar tus lecciones, <br>
+                        <p
+                            class="mb-3 text-sm text-gray-500"
+                            v-if="useHasPermission('crear_contenido')"
+                        >
+                            Si necesitas reordenar tus lecciones, <br />
                             <strong>mantén presionado y arrastra</strong>
                             cada elemento hacia el lugar donde desees colocarlo.
                         </p>
 
                         <draggable
+                            v-if="useHasPermission('crear_contenido')"
                             v-model="localLessons"
                             item-key="id"
                             class="flex flex-col justify-center divide-y divide-gray-100"
@@ -1051,11 +1052,63 @@ const handleDragEnd = () => {
                             </template>
                         </draggable>
 
+                        <!-- Lista para estudiantes -->
+                        <ul
+                            v-else
+                            class="flex flex-col justify-center divide-y divide-gray-100"
+                        >
+                            <li
+                                v-for="(l, idx) in lessons"
+                                :key="l.id"
+                                class="py-2"
+                            >
+                                <button
+                                    class="flex items-center w-full gap-3 px-2 py-2 text-left transition rounded-lg hover:bg-gray-50"
+                                    :class="
+                                        selectedLessonId === l.id
+                                            ? 'bg-indigo-50 ring-1 ring-indigo-100'
+                                            : ''
+                                    "
+                                    @click="selectedLessonId = l.id"
+                                >
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="inline-flex items-center justify-center w-6 h-6 mt-0.5 text-[11px] font-semibold rounded bg-indigo-100 text-indigo-700"
+                                        >
+                                            {{ idx + 1 }}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p
+                                                class="max-w-lg text-sm font-medium text-gray-900"
+                                                :title="l.title"
+                                            >
+                                                {{ l.title ?? "Lección" }}
+                                            </p>
+                                            <p class="text-xs text-gray-500">
+                                                <span v-if="l.duration">{{
+                                                    l.duration
+                                                }}</span>
+                                                <span
+                                                    v-if="l.duration && l.type"
+                                                    class="mx-1"
+                                                    >•</span
+                                                >
+                                                <span v-if="l.type">{{
+                                                    l.type
+                                                }}</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </button>
+                            </li>
+                        </ul>
+
                         <div class="flex justify-center">
                             <SecondaryButton
                                 color="lightblue"
                                 class="flex justify-center"
                                 @click="openLessonModal"
+                                v-if="useHasPermission('crear_contenido')"
                             >
                                 <PlusIcon class="size-4 me-2" />
                                 Agregar lección

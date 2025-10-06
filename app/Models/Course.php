@@ -47,4 +47,10 @@ class Course extends Model implements HasMedia
     {
         return $this->belongsTo(Instructor::class, 'instructor_id');
     }
+
+    // Relacion con modules
+    public function modules()
+    {
+        return $this->hasMany(Module::class);
+    }
 }

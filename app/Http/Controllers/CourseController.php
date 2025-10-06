@@ -138,4 +138,79 @@ class CourseController extends Controller
             'modules' => ModuleResource::collection($modules),
         ]);
     }
+
+    // Rutas para estudiantes
+    public function studentIndex()
+    {
+        $courses = Course::with('students', 'instructor.user', 'category')->get();
+
+        return Inertia::render('Courses/Students/Index', [
+            'courses' => CourseResource::collection($courses),
+            'categories' => CategoryResource::collection(Category::all()),
+        ]);
+    }
+
+    public function studentCourse(Course $course)
+    {
+        return Inertia::render('Courses/Students/Course', [
+            'course' => new CourseResource($course->load(['category', 'instructor.user', 'students', 'modules.lessons'])),
+        ]);
+    }
+
+    public function studentInscription(Request $request)
+    {
+        // Validar el request
+        $validated = $request->validate([
+            'course_id' => 'required|exists:courses,id',
+        ]);
+
+        // Obtener el estudiante autenticado
+        $student = auth()->user()->student;
+
+        if (!$student) {
+            return back()->withErrors(['student_id' => 'No se encontró el perfil de estudiante.']);
+        }
+
+        // Verificar si ya está inscrito
+        $alreadyEnrolled = $student->courses()->where('course_id', $validated['course_id'])->exists();
+
+        if ($alreadyEnrolled) {
+            return back()->withErrors(['course_id' => 'Ya estás inscrito en este curso.']);
+        }
+
+        // Inscribir al estudiante
+        $student->courses()->attach($validated['course_id'], [
+            'incription_date' => now(),
+            'progress' => 0,
+            'status_progress' => 'in_progress',
+            'grade' => null,
+        ]);
+
+        return redirect()->back()->with('success', 'Te has inscrito exitosamente al curso.');
+    }
+
+    public function studentMyCourses()
+    {
+        $student = auth()->user()->student;
+
+        $myCourses = $student
+            ? $student->courses()->with('category', 'instructor.user', 'students')->get()
+            : collect();
+
+        return Inertia::render('Courses/Students/MyCourses', [
+            'courses' => CourseResource::collection($myCourses),
+        ]);
+    }
+
+    public function studentModules(Course $course)
+    {
+        $modules = Module::with('lessons')
+            ->where('course_id', $course->id)
+            ->get();
+
+        return Inertia::render('Courses/Students/Modules', [
+            'course' => new CourseResource($course->load(['category', 'instructor.user'])),
+            'modules' => ModuleResource::collection($modules),
+        ]);
+    }
 }

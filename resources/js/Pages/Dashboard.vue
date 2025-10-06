@@ -1,9 +1,10 @@
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import Welcome from "@/Components/Welcome.vue";
+import WelcomeStudent from "@/Components/WelcomeStudent.vue";
 import { computed } from "vue";
 
-const props = defineProps(["user", "courses"]);
+const props = defineProps(["user", "courses", "coursesStudent", "categories"]);
 
 const isInstructor = computed(() => {
     return (
@@ -16,9 +17,9 @@ const isInstructor = computed(() => {
     <AppLayout
         :title="'¡Bienvenido/a! ' + props.user.name"
         :subtitle="
-            props.user?.roles?.some((role) => role.name === 'estudiante')
-                ? '¿Que te gustaria aprender hoy? Explora el contenido mas reciente dentro de EduNova'
-                : 'Comparte tu conocimiento y transforma la experiencia educativa de tus alumnos.'
+            isInstructor
+                ? 'Comparte tu conocimiento y transforma la experiencia educativa de tus alumnos.'
+                : '¿Que te gustaria aprender hoy? Explora el contenido mas reciente dentro de EduNova'
         "
     >
         <div>
@@ -29,6 +30,7 @@ const isInstructor = computed(() => {
                         :user="props.user"
                         v-if="isInstructor"
                     />
+                    <WelcomeStudent v-else :user="props.user" :courses="props?.coursesStudent" :categories="props?.categories" />
                 </div>
             </div>
         </div>
